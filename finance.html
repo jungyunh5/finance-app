@@ -21,6 +21,7 @@
       --color-text-secondary: #6e6e73;
       --color-border-secondary: #d1d1d6;
       --color-border-tertiary: #e5e5ea;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif;
     }
   </style>
 </head>
@@ -42,6 +43,7 @@ const CAT_ICON = { 주거:"ti-home",통신:"ti-device-mobile",보험:"ti-shield"
 const fmt = n => n.toLocaleString("ko-KR");
 const today = () => new Date().toISOString().slice(0,10);
 
+// localStorage 사용 (독립 앱)
 const storage = {
   get: key => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } },
   set: (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
