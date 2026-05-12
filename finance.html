@@ -1,34 +1,4 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-  <meta name="apple-mobile-web-app-title" content="재무앱"/>
-  <title>재무 대시보드</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #f5f5f7; font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif; }
-    :root {
-      --color-background-primary: #ffffff;
-      --color-background-secondary: #f5f5f7;
-      --color-text-primary: #1c1c1e;
-      --color-text-secondary: #6e6e73;
-      --color-border-secondary: #d1d1d6;
-      --color-border-tertiary: #e5e5ea;
-      --font-sans: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif;
-    }
-  </style>
-</head>
-<body>
-<div id="root"></div>
-<script type="text/babel">
-const { useState, useMemo, useEffect } = React;
+import { useState, useMemo, useEffect } from "react";
 
 const FIXED_DEFAULT = [
   { id: 1, name: "월세", amount: 500000, category: "주거" },
@@ -43,16 +13,10 @@ const CAT_ICON = { 주거:"ti-home",통신:"ti-device-mobile",보험:"ti-shield"
 const fmt = n => n.toLocaleString("ko-KR");
 const today = () => new Date().toISOString().slice(0,10);
 
-// localStorage 사용 (독립 앱)
-const storage = {
-  get: key => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } },
-  set: (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
-};
-
 function DonutChart({ data }) {
   const size=200,cx=100,cy=100,r=72,inner=46;
   const total=data.reduce((s,d)=>s+d.val,0);
-  if(!total) return <p style={{textAlign:"center",color:"#6e6e73",fontSize:13,padding:"20px 0"}}>데이터 없음</p>;
+  if(!total) return <p style={{textAlign:"center",color:"var(--color-text-secondary)",fontSize:13,padding:"20px 0"}}>데이터 없음</p>;
   let angle=-Math.PI/2;
   const slices=data.map(d=>{
     const sweep=(d.val/total)*2*Math.PI;
@@ -67,17 +31,17 @@ function DonutChart({ data }) {
   return(
     <div>
       <svg viewBox={`0 0 ${size} ${size}`} width="100%" style={{maxWidth:200,display:"block",margin:"0 auto"}}>
-        {slices.map((s,i)=><path key={i} d={s.path} fill={s.color} stroke="#fff" strokeWidth="2"/>)}
-        <text x={cx} y={cy-8} textAnchor="middle" fontSize="11" fill="#6e6e73">합계</text>
-        <text x={cx} y={cy+10} textAnchor="middle" fontSize="13" fontWeight="500" fill="#1c1c1e">{fmt(total)}</text>
-        <text x={cx} y={cy+24} textAnchor="middle" fontSize="11" fill="#6e6e73">원</text>
+        {slices.map((s,i)=><path key={i} d={s.path} fill={s.color} stroke="var(--color-background-primary)" strokeWidth="2"/>)}
+        <text x={cx} y={cy-8} textAnchor="middle" fontSize="11" fill="var(--color-text-secondary)">합계</text>
+        <text x={cx} y={cy+10} textAnchor="middle" fontSize="13" fontWeight="500" fill="var(--color-text-primary)">{fmt(total)}</text>
+        <text x={cx} y={cy+24} textAnchor="middle" fontSize="11" fill="var(--color-text-secondary)">원</text>
       </svg>
       <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:"6px 12px",marginTop:12}}>
         {slices.map((s,i)=>(
           <div key={i} style={{display:"flex",alignItems:"center",gap:6}}>
             <div style={{width:10,height:10,borderRadius:3,background:s.color,flexShrink:0}}></div>
-            <span style={{fontSize:11,color:"#6e6e73",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{s.name}</span>
-            <span style={{fontSize:11,color:"#1c1c1e",marginLeft:"auto",flexShrink:0}}>{Math.round(s.val/total*100)}%</span>
+            <span style={{fontSize:11,color:"var(--color-text-secondary)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{s.name}</span>
+            <span style={{fontSize:11,color:"var(--color-text-primary)",marginLeft:"auto",flexShrink:0}}>{Math.round(s.val/total*100)}%</span>
           </div>
         ))}
       </div>
@@ -85,13 +49,14 @@ function DonutChart({ data }) {
   );
 }
 
-function App() {
+export default function App() {
   const [tab,setTab]=useState("내역");
-  const [fixed,setFixed]=useState(()=>storage.get("finance-fixed")||FIXED_DEFAULT);
-  const [txs,setTxs]=useState(()=>storage.get("finance-txs")||[]);
+  const [fixed,setFixed]=useState(null);
+  const [txs,setTxs]=useState(null);
   const [modal,setModal]=useState(null);
   const [editTarget,setEditTarget]=useState(null);
   const [month,setMonth]=useState(today().slice(0,7));
+  const [loading,setLoading]=useState(true);
   const [showChart,setShowChart]=useState(false);
 
   const [fForm,setFForm]=useState({name:"",amount:"",cat:"기타"});
@@ -99,17 +64,24 @@ function App() {
   const [sForm,setSForm]=useState({date:today(),name:"",amount:"",pct:""});
   const [iForm,setIForm]=useState({date:today(),name:"급여",amount:""});
 
-  useEffect(()=>{ storage.set("finance-fixed",fixed); },[fixed]);
-  useEffect(()=>{ storage.set("finance-txs",txs); },[txs]);
+  useEffect(()=>{
+    (async()=>{
+      try{const f=await window.storage.get("finance-fixed");setFixed(f?JSON.parse(f.value):FIXED_DEFAULT);}catch{setFixed(FIXED_DEFAULT);}
+      try{const t=await window.storage.get("finance-txs");setTxs(t?JSON.parse(t.value):[]);}catch{setTxs([]);}
+      setLoading(false);
+    })();
+  },[]);
+  useEffect(()=>{if(fixed!==null)window.storage.set("finance-fixed",JSON.stringify(fixed)).catch(()=>{});},[fixed]);
+  useEffect(()=>{if(txs!==null)window.storage.set("finance-txs",JSON.stringify(txs)).catch(()=>{});},[txs]);
 
-  const monthTx=useMemo(()=>txs.filter(t=>t.date.startsWith(month)),[txs,month]);
-  const fixedTotal=fixed.reduce((s,e)=>s+e.amount,0);
+  const monthTx=useMemo(()=>(txs||[]).filter(t=>t.date.startsWith(month)),[txs,month]);
+  const fixedTotal=(fixed||[]).reduce((s,e)=>s+e.amount,0);
   const varTotal=monthTx.filter(t=>t.type==="expense").reduce((s,t)=>s+t.amount,0);
   const totalOut=fixedTotal+varTotal;
   const totalIn=monthTx.filter(t=>t.type==="income").reduce((s,t)=>s+t.amount,0);
   const stockIn=monthTx.filter(t=>t.sub==="stock").reduce((s,t)=>s+t.amount,0);
   const balance=totalIn-totalOut;
-  const donutData=useMemo(()=>{const m={};fixed.forEach(e=>{m[e.category]=(m[e.category]||0)+e.amount;});return Object.entries(m).map(([name,val])=>({name,val,color:CAT_COLOR[name]||"#888"}));},[fixed]);
+  const donutData=useMemo(()=>{const m={};(fixed||[]).forEach(e=>{m[e.category]=(m[e.category]||0)+e.amount;});return Object.entries(m).map(([name,val])=>({name,val,color:CAT_COLOR[name]||"#888"}));},[fixed]);
   const months=Array.from({length:6},(_,i)=>{const d=new Date();d.setMonth(d.getMonth()-i);return d.toISOString().slice(0,7);});
   const sorted=[...monthTx].sort((a,b)=>b.date.localeCompare(a.date));
 
@@ -125,22 +97,22 @@ function App() {
 
   const inp=(val,onChange,props={})=>(
     <input value={val} onChange={e=>onChange(e.target.value)} {...props}
-      style={{width:"100%",padding:"10px 12px",borderRadius:8,border:"1.5px solid #888",background:"#fff",color:"#1c1c1e",fontSize:14,boxSizing:"border-box",outline:"none"}}/>
+      style={{width:"100%",padding:"10px 12px",borderRadius:8,border:"1.5px solid #888",background:"var(--color-background-primary)",color:"var(--color-text-primary)",fontSize:14,boxSizing:"border-box",outline:"none"}}/>
   );
   const sel=(val,onChange,options)=>(
     <select value={val} onChange={e=>onChange(e.target.value)}
-      style={{width:"100%",padding:"10px 12px",borderRadius:8,border:"1.5px solid #888",background:"#fff",color:"#1c1c1e",fontSize:14,boxSizing:"border-box",outline:"none"}}>
+      style={{width:"100%",padding:"10px 12px",borderRadius:8,border:"1.5px solid #888",background:"var(--color-background-primary)",color:"var(--color-text-primary)",fontSize:14,boxSizing:"border-box",outline:"none"}}>
       {options.map(o=><option key={o} value={o}>{o}</option>)}
     </select>
   );
-  const lbl=t=><p style={{fontSize:12,color:"#6e6e73",marginBottom:4,marginTop:0}}>{t}</p>;
+  const lbl=t=><p style={{fontSize:12,color:"var(--color-text-secondary)",marginBottom:4,marginTop:0}}>{t}</p>;
 
   const ModalWrap=({title,onSave,btnColor,btnLabel,children})=>(
     <div onClick={()=>setModal(null)} style={{position:"fixed",inset:0,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.75)",zIndex:50,padding:16}}>
-      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:24,width:"100%",maxWidth:340,border:"1.5px solid #888",boxShadow:"0 8px 32px rgba(0,0,0,0.2)"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"var(--color-background-primary)",borderRadius:16,padding:24,width:"100%",maxWidth:340,border:"1.5px solid #888",boxShadow:"0 8px 32px rgba(0,0,0,0.35)"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-          <p style={{margin:0,fontSize:15,fontWeight:500,color:"#1c1c1e"}}>{title}</p>
-          <button onClick={()=>setModal(null)} style={{background:"none",border:"none",cursor:"pointer",color:"#6e6e73",fontSize:18}}><i className="ti ti-x"></i></button>
+          <p style={{margin:0,fontSize:15,fontWeight:500,color:"var(--color-text-primary)"}}>{title}</p>
+          <button onClick={()=>setModal(null)} style={{background:"none",border:"none",cursor:"pointer",color:"var(--color-text-secondary)",fontSize:18}}><i className="ti ti-x"></i></button>
         </div>
         {children}
         <div style={{height:16}}/>
@@ -149,40 +121,43 @@ function App() {
     </div>
   );
 
+  if(loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:300,color:"var(--color-text-secondary)",fontSize:14}}>불러오는 중...</div>;
+
   return(
-    <div style={{maxWidth:420,margin:"0 auto",paddingBottom:80}}>
+    <div style={{maxWidth:420,margin:"0 auto",fontFamily:"var(--font-sans)",paddingBottom:80}}>
       <div style={{padding:"20px 16px 0"}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
           <div>
-            <p style={{fontSize:18,fontWeight:500,color:"#1c1c1e",margin:0}}>재무 대시보드</p>
-            <p style={{fontSize:12,color:"#6e6e73",margin:"2px 0 0"}}>수입과 지출을 한눈에</p>
+            <p style={{fontSize:18,fontWeight:500,color:"var(--color-text-primary)",margin:0}}>재무 대시보드</p>
+            <p style={{fontSize:12,color:"var(--color-text-secondary)",margin:"2px 0 0"}}>수입과 지출을 한눈에</p>
           </div>
           <select value={month} onChange={e=>setMonth(e.target.value)}
-            style={{fontSize:13,padding:"6px 10px",borderRadius:8,border:"1.5px solid #888",background:"#f5f5f7",color:"#1c1c1e"}}>
+            style={{fontSize:13,padding:"6px 10px",borderRadius:8,border:"1.5px solid #888",background:"var(--color-background-secondary)",color:"var(--color-text-primary)"}}>
             {months.map(m=><option key={m} value={m}>{m}</option>)}
           </select>
         </div>
 
-        <div style={{background:"#f5f5f7",borderRadius:16,padding:"20px",marginBottom:12,border:"0.5px solid #e5e5ea",textAlign:"center"}}>
-          <p style={{fontSize:12,color:"#6e6e73",margin:"0 0 4px"}}>이번 달 잔액</p>
+        <div style={{background:"var(--color-background-secondary)",borderRadius:16,padding:"20px",marginBottom:12,border:"0.5px solid var(--color-border-tertiary)",textAlign:"center"}}>
+          <p style={{fontSize:12,color:"var(--color-text-secondary)",margin:"0 0 4px"}}>이번 달 잔액</p>
           <p style={{fontSize:32,fontWeight:500,margin:0,color:balance>=0?"#1D9E75":"#D85A30"}}>{balance>=0?"+":""}{fmt(balance)}<span style={{fontSize:16}}>원</span></p>
         </div>
 
         <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:8,marginBottom:12}}>
-          {[{label:"총 수입",val:totalIn,color:"#1D9E75"},{label:"총 지출",val:totalOut,color:"#D85A30"},{label:"고정지출",val:fixedTotal,color:"#6e6e73"},{label:"주식수익",val:stockIn,color:"#185FA5"}].map(c=>(
-            <div key={c.label} style={{background:"#f5f5f7",borderRadius:12,padding:"12px 14px",border:"0.5px solid #e5e5ea"}}>
-              <p style={{fontSize:11,color:"#6e6e73",margin:"0 0 4px"}}>{c.label}</p>
+          {[{label:"총 수입",val:totalIn,color:"#1D9E75"},{label:"총 지출",val:totalOut,color:"#D85A30"},{label:"고정지출",val:fixedTotal,color:"var(--color-text-secondary)"},{label:"주식수익",val:stockIn,color:"#185FA5"}].map(c=>(
+            <div key={c.label} style={{background:"var(--color-background-secondary)",borderRadius:12,padding:"12px 14px",border:"0.5px solid var(--color-border-tertiary)"}}>
+              <p style={{fontSize:11,color:"var(--color-text-secondary)",margin:"0 0 4px"}}>{c.label}</p>
               <p style={{fontSize:16,fontWeight:500,margin:0,color:c.color}}>{fmt(c.val)}<span style={{fontSize:11,marginLeft:2}}>원</span></p>
             </div>
           ))}
         </div>
 
-        <div style={{display:"flex",gap:4,marginBottom:16,background:"#f5f5f7",borderRadius:10,padding:4,border:"0.5px solid #e5e5ea"}}>
+        <div style={{display:"flex",gap:4,marginBottom:16,background:"var(--color-background-secondary)",borderRadius:10,padding:4,border:"0.5px solid var(--color-border-tertiary)"}}>
           {["내역","고정지출"].map(t=>(
             <button key={t} onClick={()=>setTab(t)}
               style={{flex:1,padding:"8px 0",borderRadius:7,border:"none",cursor:"pointer",fontSize:13,fontWeight:500,
-                background:tab===t?"#fff":"transparent",color:tab===t?"#1c1c1e":"#6e6e73",
-                boxShadow:tab===t?"0 0 0 0.5px #d1d1d6":"none",transition:"all .15s"}}>
+                background:tab===t?"var(--color-background-primary)":"transparent",
+                color:tab===t?"var(--color-text-primary)":"var(--color-text-secondary)",
+                boxShadow:tab===t?"0 0 0 0.5px var(--color-border-secondary)":"none",transition:"all .15s"}}>
               {t}
             </button>
           ))}
@@ -199,15 +174,15 @@ function App() {
               </button>
             ))}
           </div>
-          {sorted.length===0&&<p style={{textAlign:"center",color:"#6e6e73",padding:"40px 0",fontSize:14}}>이번 달 내역이 없습니다</p>}
+          {sorted.length===0&&<p style={{textAlign:"center",color:"var(--color-text-secondary)",padding:"40px 0",fontSize:14}}>이번 달 내역이 없습니다</p>}
           {sorted.map(t=>(
-            <div key={t.id} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:"#f5f5f7",borderRadius:12,marginBottom:8,border:"0.5px solid #e5e5ea"}}>
+            <div key={t.id} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:"var(--color-background-secondary)",borderRadius:12,marginBottom:8,border:"0.5px solid var(--color-border-tertiary)"}}>
               <div style={{width:38,height:38,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,background:t.type==="income"?"#E1F5EE":"#FAECE7"}}>
                 <i className={`ti ${CAT_ICON[t.cat]||"ti-circle"}`} style={{fontSize:18,color:t.type==="income"?"#1D9E75":"#D85A30"}}></i>
               </div>
               <div style={{flex:1,minWidth:0}}>
-                <p style={{margin:0,fontSize:14,fontWeight:500,color:"#1c1c1e",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{t.name}</p>
-                <p style={{margin:"2px 0 0",fontSize:11,color:"#6e6e73"}}>{t.date} · {t.cat}{t.sub==="stock"&&t.pct?` · +${t.pct}%`:""}</p>
+                <p style={{margin:0,fontSize:14,fontWeight:500,color:"var(--color-text-primary)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{t.name}</p>
+                <p style={{margin:"2px 0 0",fontSize:11,color:"var(--color-text-secondary)"}}>{t.date} · {t.cat}{t.sub==="stock"&&t.pct?` · +${t.pct}%`:""}</p>
               </div>
               <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
                 <p style={{margin:0,fontSize:14,fontWeight:500,color:t.type==="income"?"#1D9E75":"#D85A30"}}>{t.type==="income"?"+":"-"}{fmt(t.amount)}원</p>
@@ -222,7 +197,7 @@ function App() {
 
         {tab==="고정지출"&&<>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-            <p style={{fontSize:12,color:"#6e6e73",margin:0}}>매달 자동 반영</p>
+            <p style={{fontSize:12,color:"var(--color-text-secondary)",margin:0}}>매달 자동 반영</p>
             <div style={{display:"flex",gap:6}}>
               <button onClick={()=>setShowChart(v=>!v)}
                 style={{display:"flex",alignItems:"center",gap:4,padding:"7px 14px",borderRadius:20,border:"1.5px solid #6366f1",background:showChart?"#6366f1":"#EEEDFE",color:showChart?"#fff":"#6366f1",fontSize:12,fontWeight:500,cursor:"pointer"}}>
@@ -234,23 +209,24 @@ function App() {
               </button>
             </div>
           </div>
+
           {showChart?(
-            <div style={{background:"#f5f5f7",borderRadius:16,padding:"20px",border:"0.5px solid #e5e5ea",marginBottom:12}}>
-              <p style={{fontSize:13,fontWeight:500,color:"#1c1c1e",margin:"0 0 16px"}}>카테고리별 고정지출</p>
+            <div style={{background:"var(--color-background-secondary)",borderRadius:16,padding:"20px",border:"0.5px solid var(--color-border-tertiary)",marginBottom:12}}>
+              <p style={{fontSize:13,fontWeight:500,color:"var(--color-text-primary)",margin:"0 0 16px"}}>카테고리별 고정지출</p>
               <DonutChart data={donutData}/>
             </div>
           ):(
-            fixed.map(e=>(
-              <div key={e.id} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:"#f5f5f7",borderRadius:12,marginBottom:8,border:"0.5px solid #e5e5ea"}}>
+            (fixed||[]).map(e=>(
+              <div key={e.id} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:"var(--color-background-secondary)",borderRadius:12,marginBottom:8,border:"0.5px solid var(--color-border-tertiary)"}}>
                 <div style={{width:38,height:38,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,background:CAT_BG[e.category]||"#F3F4F6"}}>
                   <i className={`ti ${CAT_ICON[e.category]||"ti-circle"}`} style={{fontSize:18,color:CAT_COLOR[e.category]||"#888"}}></i>
                 </div>
                 <div style={{flex:1,minWidth:0}}>
-                  <p style={{margin:0,fontSize:14,fontWeight:500,color:"#1c1c1e"}}>{e.name}</p>
+                  <p style={{margin:0,fontSize:14,fontWeight:500,color:"var(--color-text-primary)"}}>{e.name}</p>
                   <p style={{margin:"2px 0 0",fontSize:11,color:CAT_COLOR[e.category]||"#888",fontWeight:500}}>{e.category}</p>
                 </div>
                 <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
-                  <p style={{margin:0,fontSize:14,fontWeight:500,color:"#1c1c1e"}}>{fmt(e.amount)}원</p>
+                  <p style={{margin:0,fontSize:14,fontWeight:500,color:"var(--color-text-primary)"}}>{fmt(e.amount)}원</p>
                   <div style={{display:"flex",gap:4}}>
                     <button onClick={()=>openEditFixed(e)} style={{background:"#E0F2FE",border:"1.5px solid #0ea5e9",borderRadius:6,cursor:"pointer",color:"#0ea5e9",padding:"3px 8px",fontSize:11,fontWeight:500}}>수정</button>
                     <button onClick={()=>setFixed(p=>p.filter(x=>x.id!==e.id))} style={{background:"#FAECE7",border:"1.5px solid #D85A30",borderRadius:6,cursor:"pointer",color:"#D85A30",padding:"3px 8px",fontSize:11,fontWeight:500}}>삭제</button>
@@ -259,8 +235,9 @@ function App() {
               </div>
             ))
           )}
-          <div style={{padding:"14px 16px",background:"#f5f5f7",borderRadius:12,border:"0.5px solid #d1d1d6",display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
-            <p style={{margin:0,fontSize:13,color:"#6e6e73"}}>고정지출 합계</p>
+
+          <div style={{padding:"14px 16px",background:"var(--color-background-secondary)",borderRadius:12,border:"0.5px solid var(--color-border-secondary)",display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
+            <p style={{margin:0,fontSize:13,color:"var(--color-text-secondary)"}}>고정지출 합계</p>
             <p style={{margin:0,fontSize:16,fontWeight:500,color:"#D85A30"}}>{fmt(fixedTotal)}원</p>
           </div>
         </>}
@@ -308,8 +285,3 @@ function App() {
     </div>
   );
 }
-
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
-</script>
-</body>
-</html>
