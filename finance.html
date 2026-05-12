@@ -1,331 +1,315 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.7">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="재무앱"/>
+  <title>재무 대시보드</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f5f5f7; font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif; }
+    :root {
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f5f5f7;
+      --color-text-primary: #1c1c1e;
+      --color-text-secondary: #6e6e73;
+      --color-border-secondary: #d1d1d6;
+      --color-border-tertiary: #e5e5ea;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif;
+    }
   </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="ko"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="apple-mobile-web-app-capable" content="yes"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="apple-mobile-web-app-status-bar-style" content="default"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="apple-mobile-web-app-title" content="재무앱"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;재무 대시보드&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://unpkg.com/react@18/umd/react.production.min.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://unpkg.com/@babel/standalone/babel.min.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>* { box-sizing: border-box; margin: 0; padding: 0; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>body { background: #f5f5f7; font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>:root {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>--color-background-primary: #ffffff;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>--color-background-secondary: #f5f5f7;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>--color-text-primary: #1c1c1e;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>--color-text-secondary: #6e6e73;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>--color-border-secondary: #d1d1d6;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>--color-border-tertiary: #e5e5ea;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>--font-sans: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1">&lt;div id="root"&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;script type="text/babel"&gt;</p>
-<p class="p1">const { useState, useMemo, useEffect } = React;</p>
-<p class="p2"><br></p>
-<p class="p1">const FIXED_DEFAULT = [</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{ id: 1, name: "월세", amount: 500000, category: "주거" },</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{ id: 2, name: "통신비", amount: 55000, category: "통신" },</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{ id: 3, name: "보험료", amount: 120000, category: "보험" },</p>
-<p class="p1">];</p>
-<p class="p1">const CATEGORIES = ["주거","통신","보험","식비","교통","구독","의료","업무","금융","나눔","기타"];</p>
-<p class="p1">const CAT_COLOR = { 주거:"#6366f1",통신:"#0ea5e9",보험:"#f59e0b",식비:"#10b981",교통:"#3b82f6",구독:"#a855f7",의료:"#ef4444",업무:"#f97316",금융:"#14b8a6",나눔:"#ec4899",기타:"#888" };</p>
-<p class="p1">const CAT_BG = { 주거:"#EEEDFE",통신:"#E0F2FE",보험:"#FEF3C7",식비:"#D1FAE5",교통:"#DBEAFE",구독:"#F3E8FF",의료:"#FEE2E2",업무:"#FFEDD5",금융:"#CCFBF1",나눔:"#FCE7F3",기타:"#F3F4F6" };</p>
-<p class="p1">const CAT_ICON = { 주거:"ti-home",통신:"ti-device-mobile",보험:"ti-shield",식비:"ti-tools-kitchen-2",교통:"ti-car",구독:"ti-refresh",의료:"ti-stethoscope",업무:"ti-briefcase",금융:"ti-coin",나눔:"ti-heart",기타:"ti-dots",주식:"ti-chart-line",수입:"ti-wallet" };</p>
-<p class="p2"><br></p>
-<p class="p1">const fmt = n =&gt; n.toLocaleString("ko-KR");</p>
-<p class="p1">const today = () =&gt; new Date().toISOString().slice(0,10);</p>
-<p class="p2"><br></p>
-<p class="p1">// localStorage 사용 (독립 앱)</p>
-<p class="p1">const storage = {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>get: key =&gt; { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } },</p>
-<p class="p1"><span class="Apple-converted-space">  </span>set: (key, val) =&gt; { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }</p>
-<p class="p1">};</p>
-<p class="p2"><br></p>
-<p class="p1">function DonutChart({ data }) {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const size=200,cx=100,cy=100,r=72,inner=46;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const total=data.reduce((s,d)=&gt;s+d.val,0);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(!total) return &lt;p style={{textAlign:"center",color:"#6e6e73",fontSize:13,padding:"20px 0"}}&gt;데이터 없음&lt;/p&gt;;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>let angle=-Math.PI/2;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const slices=data.map(d=&gt;{</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const sweep=(d.val/total)*2*Math.PI;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const x1=cx+r*Math.cos(angle),y1=cy+r*Math.sin(angle);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>angle+=sweep;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const x2=cx+r*Math.cos(angle),y2=cy+r*Math.sin(angle);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const ix1=cx+inner*Math.cos(angle-sweep),iy1=cy+inner*Math.sin(angle-sweep);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const ix2=cx+inner*Math.cos(angle),iy2=cy+inner*Math.sin(angle);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const large=sweep&gt;Math.PI?1:0;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>return{...d,path:`M${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} L${ix2},${iy2} A${inner},${inner} 0 ${large},0 ${ix1},${iy1} Z`};</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>return(</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;svg viewBox={`0 0 ${size} ${size}`} width="100%" style={{maxWidth:200,display:"block",margin:"0 auto"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{slices.map((s,i)=&gt;&lt;path key={i} d={s.path} fill={s.color} stroke="#fff" strokeWidth="2"/&gt;)}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;text x={cx} y={cy-8} textAnchor="middle" fontSize="11" fill="#6e6e73"&gt;합계&lt;/text&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;text x={cx} y={cy+10} textAnchor="middle" fontSize="13" fontWeight="500" fill="#1c1c1e"&gt;{fmt(total)}&lt;/text&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;text x={cx} y={cy+24} textAnchor="middle" fontSize="11" fill="#6e6e73"&gt;원&lt;/text&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/svg&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:"6px 12px",marginTop:12}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{slices.map((s,i)=&gt;(</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div key={i} style={{display:"flex",alignItems:"center",gap:6}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style={{width:10,height:10,borderRadius:3,background:s.color,flexShrink:0}}&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span style={{fontSize:11,color:"#6e6e73",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}&gt;{s.name}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span style={{fontSize:11,color:"#1c1c1e",marginLeft:"auto",flexShrink:0}}&gt;{Math.round(s.val/total*100)}%&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>))}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>);</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function App() {</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const [tab,setTab]=useState("내역");</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const [fixed,setFixed]=useState(()=&gt;storage.get("finance-fixed")||FIXED_DEFAULT);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const [txs,setTxs]=useState(()=&gt;storage.get("finance-txs")||[]);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const [modal,setModal]=useState(null);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const [editTarget,setEditTarget]=useState(null);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const [month,setMonth]=useState(today().slice(0,7));</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const [showChart,setShowChart]=useState(false);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>const [fForm,setFForm]=useState({name:"",amount:"",cat:"기타"});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const [eForm,setEForm]=useState({date:today(),name:"",amount:"",cat:"식비"});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const [sForm,setSForm]=useState({date:today(),name:"",amount:"",pct:""});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const [iForm,setIForm]=useState({date:today(),name:"급여",amount:""});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>useEffect(()=&gt;{ storage.set("finance-fixed",fixed); },[fixed]);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>useEffect(()=&gt;{ storage.set("finance-txs",txs); },[txs]);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>const monthTx=useMemo(()=&gt;txs.filter(t=&gt;t.date.startsWith(month)),[txs,month]);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const fixedTotal=fixed.reduce((s,e)=&gt;s+e.amount,0);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const varTotal=monthTx.filter(t=&gt;t.type==="expense").reduce((s,t)=&gt;s+t.amount,0);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const totalOut=fixedTotal+varTotal;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const totalIn=monthTx.filter(t=&gt;t.type==="income").reduce((s,t)=&gt;s+t.amount,0);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const stockIn=monthTx.filter(t=&gt;t.sub==="stock").reduce((s,t)=&gt;s+t.amount,0);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const balance=totalIn-totalOut;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const donutData=useMemo(()=&gt;{const m={};fixed.forEach(e=&gt;{m[e.category]=(m[e.category]||0)+e.amount;});return Object.entries(m).map(([name,val])=&gt;({name,val,color:CAT_COLOR[name]||"#888"}));},[fixed]);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const months=Array.from({length:6},(_,i)=&gt;{const d=new Date();d.setMonth(d.getMonth()-i);return d.toISOString().slice(0,7);});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const sorted=[...monthTx].sort((a,b)=&gt;b.date.localeCompare(a.date));</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>const addFixed=()=&gt;{if(!fForm.name||!fForm.amount)return;setFixed(p=&gt;[...p,{id:Date.now(),name:fForm.name,amount:+fForm.amount,category:fForm.cat}]);setFForm({name:"",amount:"",cat:"기타"});setModal(null);};</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const addExp=()=&gt;{if(!eForm.name||!eForm.amount)return;setTxs(p=&gt;[...p,{id:Date.now(),type:"expense",sub:"var",date:eForm.date,name:eForm.name,amount:+eForm.amount,cat:eForm.cat}]);setEForm({date:today(),name:"",amount:"",cat:"식비"});setModal(null);};</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const addStock=()=&gt;{if(!sForm.name||!sForm.amount)return;setTxs(p=&gt;[...p,{id:Date.now(),type:"income",sub:"stock",date:sForm.date,name:sForm.name,amount:+sForm.amount,pct:+sForm.pct,cat:"주식"}]);setSForm({date:today(),name:"",amount:"",pct:""});setModal(null);};</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const addIncome=()=&gt;{if(!iForm.amount)return;setTxs(p=&gt;[...p,{id:Date.now(),type:"income",sub:"salary",date:iForm.date,name:iForm.name,amount:+iForm.amount,cat:"수입"}]);setIForm({date:today(),name:"급여",amount:""});setModal(null);};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>const openEditFixed=e=&gt;{setEditTarget({...e});setModal("editFixed");};</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const openEditTx=t=&gt;{setEditTarget({...t});setModal("editTx");};</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const saveFixed=()=&gt;{if(!editTarget.name||!editTarget.amount)return;setFixed(p=&gt;p.map(e=&gt;e.id===editTarget.id?{...e,name:editTarget.name,amount:+editTarget.amount,category:editTarget.category}:e));setModal(null);};</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const saveTx=()=&gt;{if(!editTarget.name||!editTarget.amount)return;setTxs(p=&gt;p.map(t=&gt;t.id===editTarget.id?{...t,date:editTarget.date,name:editTarget.name,amount:+editTarget.amount,cat:editTarget.cat,pct:+editTarget.pct||0}:t));setModal(null);};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>const inp=(val,onChange,props={})=&gt;(</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;input value={val} onChange={e=&gt;onChange(e.target.value)} {...props}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>style={{width:"100%",padding:"10px 12px",borderRadius:8,border:"1.5px solid #888",background:"#fff",color:"#1c1c1e",fontSize:14,boxSizing:"border-box",outline:"none"}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const sel=(val,onChange,options)=&gt;(</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;select value={val} onChange={e=&gt;onChange(e.target.value)}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>style={{width:"100%",padding:"10px 12px",borderRadius:8,border:"1.5px solid #888",background:"#fff",color:"#1c1c1e",fontSize:14,boxSizing:"border-box",outline:"none"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>{options.map(o=&gt;&lt;option key={o} value={o}&gt;{o}&lt;/option&gt;)}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/select&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const lbl=t=&gt;&lt;p style={{fontSize:12,color:"#6e6e73",marginBottom:4,marginTop:0}}&gt;{t}&lt;/p&gt;;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>const ModalWrap=({title,onSave,btnColor,btnLabel,children})=&gt;(</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div onClick={()=&gt;setModal(null)} style={{position:"fixed",inset:0,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.75)",zIndex:50,padding:16}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div onClick={e=&gt;e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:24,width:"100%",maxWidth:340,border:"1.5px solid #888",boxShadow:"0 8px 32px rgba(0,0,0,0.2)"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;p style={{margin:0,fontSize:15,fontWeight:500,color:"#1c1c1e"}}&gt;{title}&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;button onClick={()=&gt;setModal(null)} style={{background:"none",border:"none",cursor:"pointer",color:"#6e6e73",fontSize:18}}&gt;&lt;i className="ti ti-x"&gt;&lt;/i&gt;&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{children}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{height:16}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onClick={onSave} style={{width:"100%",padding:"12px",borderRadius:10,border:"none",background:btnColor,color:"#fff",fontSize:14,fontWeight:500,cursor:"pointer"}}&gt;{btnLabel}&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>return(</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div style={{maxWidth:420,margin:"0 auto",paddingBottom:80}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{padding:"20px 16px 0"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p style={{fontSize:18,fontWeight:500,color:"#1c1c1e",margin:0}}&gt;재무 대시보드&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p style={{fontSize:12,color:"#6e6e73",margin:"2px 0 0"}}&gt;수입과 지출을 한눈에&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;select value={month} onChange={e=&gt;setMonth(e.target.value)}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>style={{fontSize:13,padding:"6px 10px",borderRadius:8,border:"1.5px solid #888",background:"#f5f5f7",color:"#1c1c1e"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{months.map(m=&gt;&lt;option key={m} value={m}&gt;{m}&lt;/option&gt;)}</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/select&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{background:"#f5f5f7",borderRadius:16,padding:"20px",marginBottom:12,border:"0.5px solid #e5e5ea",textAlign:"center"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;p style={{fontSize:12,color:"#6e6e73",margin:"0 0 4px"}}&gt;이번 달 잔액&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;p style={{fontSize:32,fontWeight:500,margin:0,color:balance&gt;=0?"#1D9E75":"#D85A30"}}&gt;{balance&gt;=0?"+":""}{fmt(balance)}&lt;span style={{fontSize:16}}&gt;원&lt;/span&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:8,marginBottom:12}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>{[{label:"총 수입",val:totalIn,color:"#1D9E75"},{label:"총 지출",val:totalOut,color:"#D85A30"},{label:"고정지출",val:fixedTotal,color:"#6e6e73"},{label:"주식수익",val:stockIn,color:"#185FA5"}].map(c=&gt;(</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div key={c.label} style={{background:"#f5f5f7",borderRadius:12,padding:"12px 14px",border:"0.5px solid #e5e5ea"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;p style={{fontSize:11,color:"#6e6e73",margin:"0 0 4px"}}&gt;{c.label}&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;p style={{fontSize:16,fontWeight:500,margin:0,color:c.color}}&gt;{fmt(c.val)}&lt;span style={{fontSize:11,marginLeft:2}}&gt;원&lt;/span&gt;&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>))}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style={{display:"flex",gap:4,marginBottom:16,background:"#f5f5f7",borderRadius:10,padding:4,border:"0.5px solid #e5e5ea"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>{["내역","고정지출"].map(t=&gt;(</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button key={t} onClick={()=&gt;setTab(t)}</p>
-<p class="p1"><span class="Apple-converted-space">              </span>style={{flex:1,padding:"8px 0",borderRadius:7,border:"none",cursor:"pointer",fontSize:13,fontWeight:500,</p>
-<p class="p1"><span class="Apple-converted-space">                </span>background:tab===t?"#fff":"transparent",color:tab===t?"#1c1c1e":"#6e6e73",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>boxShadow:tab===t?"0 0 0 0.5px #d1d1d6":"none",transition:"all .15s"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>{t}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>))}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div style={{padding:"0 16px"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{tab==="내역"&amp;&amp;&lt;&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{[{label:"지출 추가",icon:"ti-minus",color:"#D85A30",bg:"#FAECE7",m:()=&gt;setModal("exp")},{label:"주식수익",icon:"ti-chart-line",color:"#185FA5",bg:"#E6F1FB",m:()=&gt;setModal("stock")},{label:"기타수입",icon:"ti-plus",color:"#1D9E75",bg:"#E1F5EE",m:()=&gt;setModal("income")}].map(b=&gt;(</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;button key={b.label} onClick={b.m}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>style={{display:"flex",alignItems:"center",gap:5,padding:"7px 12px",borderRadius:20,border:`1.5px solid ${b.color}`,background:b.bg,color:b.color,fontSize:12,fontWeight:500,cursor:"pointer"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;i className={`ti ${b.icon}`} style={{fontSize:13}}&gt;&lt;/i&gt;{b.label}</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>))}</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>{sorted.length===0&amp;&amp;&lt;p style={{textAlign:"center",color:"#6e6e73",padding:"40px 0",fontSize:14}}&gt;이번 달 내역이 없습니다&lt;/p&gt;}</p>
-<p class="p1"><span class="Apple-converted-space">          </span>{sorted.map(t=&gt;(</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div key={t.id} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:"#f5f5f7",borderRadius:12,marginBottom:8,border:"0.5px solid #e5e5ea"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style={{width:38,height:38,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,background:t.type==="income"?"#E1F5EE":"#FAECE7"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;i className={`ti ${CAT_ICON[t.cat]||"ti-circle"}`} style={{fontSize:18,color:t.type==="income"?"#1D9E75":"#D85A30"}}&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style={{flex:1,minWidth:0}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;p style={{margin:0,fontSize:14,fontWeight:500,color:"#1c1c1e",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}&gt;{t.name}&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;p style={{margin:"2px 0 0",fontSize:11,color:"#6e6e73"}}&gt;{t.date} · {t.cat}{t.sub==="stock"&amp;&amp;t.pct?` · +${t.pct}%`:""}&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;p style={{margin:0,fontSize:14,fontWeight:500,color:t.type==="income"?"#1D9E75":"#D85A30"}}&gt;{t.type==="income"?"+":"-"}{fmt(t.amount)}원&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div style={{display:"flex",gap:4}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                  </span>&lt;button onClick={()=&gt;openEditTx(t)} style={{background:"#E0F2FE",border:"1.5px solid #0ea5e9",borderRadius:6,cursor:"pointer",color:"#0ea5e9",padding:"3px 8px",fontSize:11,fontWeight:500}}&gt;수정&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                  </span>&lt;button onClick={()=&gt;setTxs(p=&gt;p.filter(x=&gt;x.id!==t.id))} style={{background:"#FAECE7",border:"1.5px solid #D85A30",borderRadius:6,cursor:"pointer",color:"#D85A30",padding:"3px 8px",fontSize:11,fontWeight:500}}&gt;삭제&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>))}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/&gt;}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>{tab==="고정지출"&amp;&amp;&lt;&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p style={{fontSize:12,color:"#6e6e73",margin:0}}&gt;매달 자동 반영&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style={{display:"flex",gap:6}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;button onClick={()=&gt;setShowChart(v=&gt;!v)}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>style={{display:"flex",alignItems:"center",gap:4,padding:"7px 14px",borderRadius:20,border:"1.5px solid #6366f1",background:showChart?"#6366f1":"#EEEDFE",color:showChart?"#fff":"#6366f1",fontSize:12,fontWeight:500,cursor:"pointer"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;i className="ti ti-chart-donut" style={{fontSize:12}}&gt;&lt;/i&gt;{showChart?"목록 보기":"차트 보기"}</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;button onClick={()=&gt;setModal("fixed")}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>style={{display:"flex",alignItems:"center",gap:4,padding:"7px 14px",borderRadius:20,border:"1.5px solid #6366f1",background:"#EEEDFE",color:"#6366f1",fontSize:12,fontWeight:500,cursor:"pointer"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;i className="ti ti-plus" style={{fontSize:12}}&gt;&lt;/i&gt;추가</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>{showChart?(</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div style={{background:"#f5f5f7",borderRadius:16,padding:"20px",border:"0.5px solid #e5e5ea",marginBottom:12}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;p style={{fontSize:13,fontWeight:500,color:"#1c1c1e",margin:"0 0 16px"}}&gt;카테고리별 고정지출&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;DonutChart data={donutData}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>):(</p>
-<p class="p1"><span class="Apple-converted-space">            </span>fixed.map(e=&gt;(</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;div key={e.id} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:"#f5f5f7",borderRadius:12,marginBottom:8,border:"0.5px solid #e5e5ea"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div style={{width:38,height:38,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,background:CAT_BG[e.category]||"#F3F4F6"}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                  </span>&lt;i className={`ti ${CAT_ICON[e.category]||"ti-circle"}`} style={{fontSize:18,color:CAT_COLOR[e.category]||"#888"}}&gt;&lt;/i&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div style={{flex:1,minWidth:0}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                  </span>&lt;p style={{margin:0,fontSize:14,fontWeight:500,color:"#1c1c1e"}}&gt;{e.name}&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                  </span>&lt;p style={{margin:"2px 0 0",fontSize:11,color:CAT_COLOR[e.category]||"#888",fontWeight:500}}&gt;{e.category}&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                  </span>&lt;p style={{margin:0,fontSize:14,fontWeight:500,color:"#1c1c1e"}}&gt;{fmt(e.amount)}원&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                  </span>&lt;div style={{display:"flex",gap:4}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button onClick={()=&gt;openEditFixed(e)} style={{background:"#E0F2FE",border:"1.5px solid #0ea5e9",borderRadius:6,cursor:"pointer",color:"#0ea5e9",padding:"3px 8px",fontSize:11,fontWeight:500}}&gt;수정&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button onClick={()=&gt;setFixed(p=&gt;p.filter(x=&gt;x.id!==e.id))} style={{background:"#FAECE7",border:"1.5px solid #D85A30",borderRadius:6,cursor:"pointer",color:"#D85A30",padding:"3px 8px",fontSize:11,fontWeight:500}}&gt;삭제&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>))</p>
-<p class="p1"><span class="Apple-converted-space">          </span>)}</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style={{padding:"14px 16px",background:"#f5f5f7",borderRadius:12,border:"0.5px solid #d1d1d6",display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p style={{margin:0,fontSize:13,color:"#6e6e73"}}&gt;고정지출 합계&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p style={{margin:0,fontSize:16,fontWeight:500,color:"#D85A30"}}&gt;{fmt(fixedTotal)}원&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/&gt;}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>{modal==="fixed"&amp;&amp;&lt;ModalWrap title="고정지출 추가" onSave={addFixed} btnColor="#6366f1" btnLabel="추가하기"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("항목명")}{inp(fForm.name,v=&gt;setFForm(p=&gt;({...p,name:v})),{placeholder:"예: 월세, 넷플릭스"})}&lt;div style={{height:10}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("금액 (원)")}{inp(fForm.amount,v=&gt;setFForm(p=&gt;({...p,amount:v})),{type:"number",placeholder:"500000"})}&lt;div style={{height:10}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("카테고리")}{sel(fForm.cat,v=&gt;setFForm(p=&gt;({...p,cat:v})),CATEGORIES)}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/ModalWrap&gt;}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>{modal==="editFixed"&amp;&amp;editTarget&amp;&amp;&lt;ModalWrap title="고정지출 수정" onSave={saveFixed} btnColor="#0ea5e9" btnLabel="저장하기"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("항목명")}{inp(editTarget.name,v=&gt;setEditTarget(p=&gt;({...p,name:v})))}&lt;div style={{height:10}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("금액 (원)")}{inp(String(editTarget.amount),v=&gt;setEditTarget(p=&gt;({...p,amount:v})),{type:"number"})}&lt;div style={{height:10}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("카테고리")}{sel(editTarget.category,v=&gt;setEditTarget(p=&gt;({...p,category:v})),CATEGORIES)}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/ModalWrap&gt;}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>{modal==="exp"&amp;&amp;&lt;ModalWrap title="변동지출 추가" onSave={addExp} btnColor="#D85A30" btnLabel="추가하기"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("날짜")}{inp(eForm.date,v=&gt;setEForm(p=&gt;({...p,date:v})),{type:"date"})}&lt;div style={{height:10}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("항목명")}{inp(eForm.name,v=&gt;setEForm(p=&gt;({...p,name:v})),{placeholder:"예: 커피, 택시"})}&lt;div style={{height:10}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("금액 (원)")}{inp(eForm.amount,v=&gt;setEForm(p=&gt;({...p,amount:v})),{type:"number",placeholder:"15000"})}&lt;div style={{height:10}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("카테고리")}{sel(eForm.cat,v=&gt;setEForm(p=&gt;({...p,cat:v})),CATEGORIES)}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/ModalWrap&gt;}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>{modal==="stock"&amp;&amp;&lt;ModalWrap title="주식 수익 추가" onSave={addStock} btnColor="#185FA5" btnLabel="추가하기"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("날짜")}{inp(sForm.date,v=&gt;setSForm(p=&gt;({...p,date:v})),{type:"date"})}&lt;div style={{height:10}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("종목명")}{inp(sForm.name,v=&gt;setSForm(p=&gt;({...p,name:v})),{placeholder:"예: 삼성전자"})}&lt;div style={{height:10}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("상승률 (%)")}{inp(sForm.pct,v=&gt;setSForm(p=&gt;({...p,pct:v})),{type:"number",step:"0.01",placeholder:"3.5"})}&lt;div style={{height:10}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("수익금액 (원)")}{inp(sForm.amount,v=&gt;setSForm(p=&gt;({...p,amount:v})),{type:"number",placeholder:"85000"})}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/ModalWrap&gt;}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>{modal==="income"&amp;&amp;&lt;ModalWrap title="기타 수입 추가" onSave={addIncome} btnColor="#1D9E75" btnLabel="추가하기"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("날짜")}{inp(iForm.date,v=&gt;setIForm(p=&gt;({...p,date:v})),{type:"date"})}&lt;div style={{height:10}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("항목명")}{inp(iForm.name,v=&gt;setIForm(p=&gt;({...p,name:v})),{placeholder:"예: 급여, 용돈"})}&lt;div style={{height:10}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("금액 (원)")}{inp(iForm.amount,v=&gt;setIForm(p=&gt;({...p,amount:v})),{type:"number",placeholder:"3000000"})}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/ModalWrap&gt;}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>{modal==="editTx"&amp;&amp;editTarget&amp;&amp;&lt;ModalWrap title="내역 수정" onSave={saveTx} btnColor="#0ea5e9" btnLabel="저장하기"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("날짜")}{inp(editTarget.date,v=&gt;setEditTarget(p=&gt;({...p,date:v})),{type:"date"})}&lt;div style={{height:10}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("항목명")}{inp(editTarget.name,v=&gt;setEditTarget(p=&gt;({...p,name:v})))}&lt;div style={{height:10}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{lbl("금액 (원)")}{inp(String(editTarget.amount),v=&gt;setEditTarget(p=&gt;({...p,amount:v})),{type:"number"})}&lt;div style={{height:10}}/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{editTarget.sub==="stock"&amp;&amp;&lt;&gt;{lbl("상승률 (%)")}{inp(String(editTarget.pct||""),v=&gt;setEditTarget(p=&gt;({...p,pct:v})),{type:"number",step:"0.01"})}&lt;div style={{height:10}}/&gt;&lt;/&gt;}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>{editTarget.sub!=="stock"&amp;&amp;&lt;&gt;{lbl("카테고리")}{sel(editTarget.cat,v=&gt;setEditTarget(p=&gt;({...p,cat:v})),CATEGORIES)}&lt;/&gt;}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/ModalWrap&gt;}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>);</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">ReactDOM.createRoot(document.getElementById("root")).render(&lt;App/&gt;);</p>
-<p class="p1">&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo, useEffect } = React;
+
+const FIXED_DEFAULT = [
+  { id: 1, name: "월세", amount: 500000, category: "주거" },
+  { id: 2, name: "통신비", amount: 55000, category: "통신" },
+  { id: 3, name: "보험료", amount: 120000, category: "보험" },
+];
+const CATEGORIES = ["주거","통신","보험","식비","교통","구독","의료","업무","금융","나눔","기타"];
+const CAT_COLOR = { 주거:"#6366f1",통신:"#0ea5e9",보험:"#f59e0b",식비:"#10b981",교통:"#3b82f6",구독:"#a855f7",의료:"#ef4444",업무:"#f97316",금융:"#14b8a6",나눔:"#ec4899",기타:"#888" };
+const CAT_BG = { 주거:"#EEEDFE",통신:"#E0F2FE",보험:"#FEF3C7",식비:"#D1FAE5",교통:"#DBEAFE",구독:"#F3E8FF",의료:"#FEE2E2",업무:"#FFEDD5",금융:"#CCFBF1",나눔:"#FCE7F3",기타:"#F3F4F6" };
+const CAT_ICON = { 주거:"ti-home",통신:"ti-device-mobile",보험:"ti-shield",식비:"ti-tools-kitchen-2",교통:"ti-car",구독:"ti-refresh",의료:"ti-stethoscope",업무:"ti-briefcase",금융:"ti-coin",나눔:"ti-heart",기타:"ti-dots",주식:"ti-chart-line",수입:"ti-wallet" };
+
+const fmt = n => n.toLocaleString("ko-KR");
+const today = () => new Date().toISOString().slice(0,10);
+
+// localStorage 사용 (독립 앱)
+const storage = {
+  get: key => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } },
+  set: (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
+};
+
+function DonutChart({ data }) {
+  const size=200,cx=100,cy=100,r=72,inner=46;
+  const total=data.reduce((s,d)=>s+d.val,0);
+  if(!total) return <p style={{textAlign:"center",color:"#6e6e73",fontSize:13,padding:"20px 0"}}>데이터 없음</p>;
+  let angle=-Math.PI/2;
+  const slices=data.map(d=>{
+    const sweep=(d.val/total)*2*Math.PI;
+    const x1=cx+r*Math.cos(angle),y1=cy+r*Math.sin(angle);
+    angle+=sweep;
+    const x2=cx+r*Math.cos(angle),y2=cy+r*Math.sin(angle);
+    const ix1=cx+inner*Math.cos(angle-sweep),iy1=cy+inner*Math.sin(angle-sweep);
+    const ix2=cx+inner*Math.cos(angle),iy2=cy+inner*Math.sin(angle);
+    const large=sweep>Math.PI?1:0;
+    return{...d,path:`M${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} L${ix2},${iy2} A${inner},${inner} 0 ${large},0 ${ix1},${iy1} Z`};
+  });
+  return(
+    <div>
+      <svg viewBox={`0 0 ${size} ${size}`} width="100%" style={{maxWidth:200,display:"block",margin:"0 auto"}}>
+        {slices.map((s,i)=><path key={i} d={s.path} fill={s.color} stroke="#fff" strokeWidth="2"/>)}
+        <text x={cx} y={cy-8} textAnchor="middle" fontSize="11" fill="#6e6e73">합계</text>
+        <text x={cx} y={cy+10} textAnchor="middle" fontSize="13" fontWeight="500" fill="#1c1c1e">{fmt(total)}</text>
+        <text x={cx} y={cy+24} textAnchor="middle" fontSize="11" fill="#6e6e73">원</text>
+      </svg>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:"6px 12px",marginTop:12}}>
+        {slices.map((s,i)=>(
+          <div key={i} style={{display:"flex",alignItems:"center",gap:6}}>
+            <div style={{width:10,height:10,borderRadius:3,background:s.color,flexShrink:0}}></div>
+            <span style={{fontSize:11,color:"#6e6e73",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{s.name}</span>
+            <span style={{fontSize:11,color:"#1c1c1e",marginLeft:"auto",flexShrink:0}}>{Math.round(s.val/total*100)}%</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [tab,setTab]=useState("내역");
+  const [fixed,setFixed]=useState(()=>storage.get("finance-fixed")||FIXED_DEFAULT);
+  const [txs,setTxs]=useState(()=>storage.get("finance-txs")||[]);
+  const [modal,setModal]=useState(null);
+  const [editTarget,setEditTarget]=useState(null);
+  const [month,setMonth]=useState(today().slice(0,7));
+  const [showChart,setShowChart]=useState(false);
+
+  const [fForm,setFForm]=useState({name:"",amount:"",cat:"기타"});
+  const [eForm,setEForm]=useState({date:today(),name:"",amount:"",cat:"식비"});
+  const [sForm,setSForm]=useState({date:today(),name:"",amount:"",pct:""});
+  const [iForm,setIForm]=useState({date:today(),name:"급여",amount:""});
+
+  useEffect(()=>{ storage.set("finance-fixed",fixed); },[fixed]);
+  useEffect(()=>{ storage.set("finance-txs",txs); },[txs]);
+
+  const monthTx=useMemo(()=>txs.filter(t=>t.date.startsWith(month)),[txs,month]);
+  const fixedTotal=fixed.reduce((s,e)=>s+e.amount,0);
+  const varTotal=monthTx.filter(t=>t.type==="expense").reduce((s,t)=>s+t.amount,0);
+  const totalOut=fixedTotal+varTotal;
+  const totalIn=monthTx.filter(t=>t.type==="income").reduce((s,t)=>s+t.amount,0);
+  const stockIn=monthTx.filter(t=>t.sub==="stock").reduce((s,t)=>s+t.amount,0);
+  const balance=totalIn-totalOut;
+  const donutData=useMemo(()=>{const m={};fixed.forEach(e=>{m[e.category]=(m[e.category]||0)+e.amount;});return Object.entries(m).map(([name,val])=>({name,val,color:CAT_COLOR[name]||"#888"}));},[fixed]);
+  const months=Array.from({length:6},(_,i)=>{const d=new Date();d.setMonth(d.getMonth()-i);return d.toISOString().slice(0,7);});
+  const sorted=[...monthTx].sort((a,b)=>b.date.localeCompare(a.date));
+
+  const addFixed=()=>{if(!fForm.name||!fForm.amount)return;setFixed(p=>[...p,{id:Date.now(),name:fForm.name,amount:+fForm.amount,category:fForm.cat}]);setFForm({name:"",amount:"",cat:"기타"});setModal(null);};
+  const addExp=()=>{if(!eForm.name||!eForm.amount)return;setTxs(p=>[...p,{id:Date.now(),type:"expense",sub:"var",date:eForm.date,name:eForm.name,amount:+eForm.amount,cat:eForm.cat}]);setEForm({date:today(),name:"",amount:"",cat:"식비"});setModal(null);};
+  const addStock=()=>{if(!sForm.name||!sForm.amount)return;setTxs(p=>[...p,{id:Date.now(),type:"income",sub:"stock",date:sForm.date,name:sForm.name,amount:+sForm.amount,pct:+sForm.pct,cat:"주식"}]);setSForm({date:today(),name:"",amount:"",pct:""});setModal(null);};
+  const addIncome=()=>{if(!iForm.amount)return;setTxs(p=>[...p,{id:Date.now(),type:"income",sub:"salary",date:iForm.date,name:iForm.name,amount:+iForm.amount,cat:"수입"}]);setIForm({date:today(),name:"급여",amount:""});setModal(null);};
+
+  const openEditFixed=e=>{setEditTarget({...e});setModal("editFixed");};
+  const openEditTx=t=>{setEditTarget({...t});setModal("editTx");};
+  const saveFixed=()=>{if(!editTarget.name||!editTarget.amount)return;setFixed(p=>p.map(e=>e.id===editTarget.id?{...e,name:editTarget.name,amount:+editTarget.amount,category:editTarget.category}:e));setModal(null);};
+  const saveTx=()=>{if(!editTarget.name||!editTarget.amount)return;setTxs(p=>p.map(t=>t.id===editTarget.id?{...t,date:editTarget.date,name:editTarget.name,amount:+editTarget.amount,cat:editTarget.cat,pct:+editTarget.pct||0}:t));setModal(null);};
+
+  const inp=(val,onChange,props={})=>(
+    <input value={val} onChange={e=>onChange(e.target.value)} {...props}
+      style={{width:"100%",padding:"10px 12px",borderRadius:8,border:"1.5px solid #888",background:"#fff",color:"#1c1c1e",fontSize:14,boxSizing:"border-box",outline:"none"}}/>
+  );
+  const sel=(val,onChange,options)=>(
+    <select value={val} onChange={e=>onChange(e.target.value)}
+      style={{width:"100%",padding:"10px 12px",borderRadius:8,border:"1.5px solid #888",background:"#fff",color:"#1c1c1e",fontSize:14,boxSizing:"border-box",outline:"none"}}>
+      {options.map(o=><option key={o} value={o}>{o}</option>)}
+    </select>
+  );
+  const lbl=t=><p style={{fontSize:12,color:"#6e6e73",marginBottom:4,marginTop:0}}>{t}</p>;
+
+  const ModalWrap=({title,onSave,btnColor,btnLabel,children})=>(
+    <div onClick={()=>setModal(null)} style={{position:"fixed",inset:0,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.75)",zIndex:50,padding:16}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:24,width:"100%",maxWidth:340,border:"1.5px solid #888",boxShadow:"0 8px 32px rgba(0,0,0,0.2)"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+          <p style={{margin:0,fontSize:15,fontWeight:500,color:"#1c1c1e"}}>{title}</p>
+          <button onClick={()=>setModal(null)} style={{background:"none",border:"none",cursor:"pointer",color:"#6e6e73",fontSize:18}}><i className="ti ti-x"></i></button>
+        </div>
+        {children}
+        <div style={{height:16}}/>
+        <button onClick={onSave} style={{width:"100%",padding:"12px",borderRadius:10,border:"none",background:btnColor,color:"#fff",fontSize:14,fontWeight:500,cursor:"pointer"}}>{btnLabel}</button>
+      </div>
+    </div>
+  );
+
+  return(
+    <div style={{maxWidth:420,margin:"0 auto",paddingBottom:80}}>
+      <div style={{padding:"20px 16px 0"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
+          <div>
+            <p style={{fontSize:18,fontWeight:500,color:"#1c1c1e",margin:0}}>재무 대시보드</p>
+            <p style={{fontSize:12,color:"#6e6e73",margin:"2px 0 0"}}>수입과 지출을 한눈에</p>
+          </div>
+          <select value={month} onChange={e=>setMonth(e.target.value)}
+            style={{fontSize:13,padding:"6px 10px",borderRadius:8,border:"1.5px solid #888",background:"#f5f5f7",color:"#1c1c1e"}}>
+            {months.map(m=><option key={m} value={m}>{m}</option>)}
+          </select>
+        </div>
+
+        <div style={{background:"#f5f5f7",borderRadius:16,padding:"20px",marginBottom:12,border:"0.5px solid #e5e5ea",textAlign:"center"}}>
+          <p style={{fontSize:12,color:"#6e6e73",margin:"0 0 4px"}}>이번 달 잔액</p>
+          <p style={{fontSize:32,fontWeight:500,margin:0,color:balance>=0?"#1D9E75":"#D85A30"}}>{balance>=0?"+":""}{fmt(balance)}<span style={{fontSize:16}}>원</span></p>
+        </div>
+
+        <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:8,marginBottom:12}}>
+          {[{label:"총 수입",val:totalIn,color:"#1D9E75"},{label:"총 지출",val:totalOut,color:"#D85A30"},{label:"고정지출",val:fixedTotal,color:"#6e6e73"},{label:"주식수익",val:stockIn,color:"#185FA5"}].map(c=>(
+            <div key={c.label} style={{background:"#f5f5f7",borderRadius:12,padding:"12px 14px",border:"0.5px solid #e5e5ea"}}>
+              <p style={{fontSize:11,color:"#6e6e73",margin:"0 0 4px"}}>{c.label}</p>
+              <p style={{fontSize:16,fontWeight:500,margin:0,color:c.color}}>{fmt(c.val)}<span style={{fontSize:11,marginLeft:2}}>원</span></p>
+            </div>
+          ))}
+        </div>
+
+        <div style={{display:"flex",gap:4,marginBottom:16,background:"#f5f5f7",borderRadius:10,padding:4,border:"0.5px solid #e5e5ea"}}>
+          {["내역","고정지출"].map(t=>(
+            <button key={t} onClick={()=>setTab(t)}
+              style={{flex:1,padding:"8px 0",borderRadius:7,border:"none",cursor:"pointer",fontSize:13,fontWeight:500,
+                background:tab===t?"#fff":"transparent",color:tab===t?"#1c1c1e":"#6e6e73",
+                boxShadow:tab===t?"0 0 0 0.5px #d1d1d6":"none",transition:"all .15s"}}>
+              {t}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{padding:"0 16px"}}>
+        {tab==="내역"&&<>
+          <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
+            {[{label:"지출 추가",icon:"ti-minus",color:"#D85A30",bg:"#FAECE7",m:()=>setModal("exp")},{label:"주식수익",icon:"ti-chart-line",color:"#185FA5",bg:"#E6F1FB",m:()=>setModal("stock")},{label:"기타수입",icon:"ti-plus",color:"#1D9E75",bg:"#E1F5EE",m:()=>setModal("income")}].map(b=>(
+              <button key={b.label} onClick={b.m}
+                style={{display:"flex",alignItems:"center",gap:5,padding:"7px 12px",borderRadius:20,border:`1.5px solid ${b.color}`,background:b.bg,color:b.color,fontSize:12,fontWeight:500,cursor:"pointer"}}>
+                <i className={`ti ${b.icon}`} style={{fontSize:13}}></i>{b.label}
+              </button>
+            ))}
+          </div>
+          {sorted.length===0&&<p style={{textAlign:"center",color:"#6e6e73",padding:"40px 0",fontSize:14}}>이번 달 내역이 없습니다</p>}
+          {sorted.map(t=>(
+            <div key={t.id} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:"#f5f5f7",borderRadius:12,marginBottom:8,border:"0.5px solid #e5e5ea"}}>
+              <div style={{width:38,height:38,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,background:t.type==="income"?"#E1F5EE":"#FAECE7"}}>
+                <i className={`ti ${CAT_ICON[t.cat]||"ti-circle"}`} style={{fontSize:18,color:t.type==="income"?"#1D9E75":"#D85A30"}}></i>
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <p style={{margin:0,fontSize:14,fontWeight:500,color:"#1c1c1e",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{t.name}</p>
+                <p style={{margin:"2px 0 0",fontSize:11,color:"#6e6e73"}}>{t.date} · {t.cat}{t.sub==="stock"&&t.pct?` · +${t.pct}%`:""}</p>
+              </div>
+              <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
+                <p style={{margin:0,fontSize:14,fontWeight:500,color:t.type==="income"?"#1D9E75":"#D85A30"}}>{t.type==="income"?"+":"-"}{fmt(t.amount)}원</p>
+                <div style={{display:"flex",gap:4}}>
+                  <button onClick={()=>openEditTx(t)} style={{background:"#E0F2FE",border:"1.5px solid #0ea5e9",borderRadius:6,cursor:"pointer",color:"#0ea5e9",padding:"3px 8px",fontSize:11,fontWeight:500}}>수정</button>
+                  <button onClick={()=>setTxs(p=>p.filter(x=>x.id!==t.id))} style={{background:"#FAECE7",border:"1.5px solid #D85A30",borderRadius:6,cursor:"pointer",color:"#D85A30",padding:"3px 8px",fontSize:11,fontWeight:500}}>삭제</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </>}
+
+        {tab==="고정지출"&&<>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+            <p style={{fontSize:12,color:"#6e6e73",margin:0}}>매달 자동 반영</p>
+            <div style={{display:"flex",gap:6}}>
+              <button onClick={()=>setShowChart(v=>!v)}
+                style={{display:"flex",alignItems:"center",gap:4,padding:"7px 14px",borderRadius:20,border:"1.5px solid #6366f1",background:showChart?"#6366f1":"#EEEDFE",color:showChart?"#fff":"#6366f1",fontSize:12,fontWeight:500,cursor:"pointer"}}>
+                <i className="ti ti-chart-donut" style={{fontSize:12}}></i>{showChart?"목록 보기":"차트 보기"}
+              </button>
+              <button onClick={()=>setModal("fixed")}
+                style={{display:"flex",alignItems:"center",gap:4,padding:"7px 14px",borderRadius:20,border:"1.5px solid #6366f1",background:"#EEEDFE",color:"#6366f1",fontSize:12,fontWeight:500,cursor:"pointer"}}>
+                <i className="ti ti-plus" style={{fontSize:12}}></i>추가
+              </button>
+            </div>
+          </div>
+          {showChart?(
+            <div style={{background:"#f5f5f7",borderRadius:16,padding:"20px",border:"0.5px solid #e5e5ea",marginBottom:12}}>
+              <p style={{fontSize:13,fontWeight:500,color:"#1c1c1e",margin:"0 0 16px"}}>카테고리별 고정지출</p>
+              <DonutChart data={donutData}/>
+            </div>
+          ):(
+            fixed.map(e=>(
+              <div key={e.id} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:"#f5f5f7",borderRadius:12,marginBottom:8,border:"0.5px solid #e5e5ea"}}>
+                <div style={{width:38,height:38,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,background:CAT_BG[e.category]||"#F3F4F6"}}>
+                  <i className={`ti ${CAT_ICON[e.category]||"ti-circle"}`} style={{fontSize:18,color:CAT_COLOR[e.category]||"#888"}}></i>
+                </div>
+                <div style={{flex:1,minWidth:0}}>
+                  <p style={{margin:0,fontSize:14,fontWeight:500,color:"#1c1c1e"}}>{e.name}</p>
+                  <p style={{margin:"2px 0 0",fontSize:11,color:CAT_COLOR[e.category]||"#888",fontWeight:500}}>{e.category}</p>
+                </div>
+                <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
+                  <p style={{margin:0,fontSize:14,fontWeight:500,color:"#1c1c1e"}}>{fmt(e.amount)}원</p>
+                  <div style={{display:"flex",gap:4}}>
+                    <button onClick={()=>openEditFixed(e)} style={{background:"#E0F2FE",border:"1.5px solid #0ea5e9",borderRadius:6,cursor:"pointer",color:"#0ea5e9",padding:"3px 8px",fontSize:11,fontWeight:500}}>수정</button>
+                    <button onClick={()=>setFixed(p=>p.filter(x=>x.id!==e.id))} style={{background:"#FAECE7",border:"1.5px solid #D85A30",borderRadius:6,cursor:"pointer",color:"#D85A30",padding:"3px 8px",fontSize:11,fontWeight:500}}>삭제</button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+          <div style={{padding:"14px 16px",background:"#f5f5f7",borderRadius:12,border:"0.5px solid #d1d1d6",display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
+            <p style={{margin:0,fontSize:13,color:"#6e6e73"}}>고정지출 합계</p>
+            <p style={{margin:0,fontSize:16,fontWeight:500,color:"#D85A30"}}>{fmt(fixedTotal)}원</p>
+          </div>
+        </>}
+      </div>
+
+      {modal==="fixed"&&<ModalWrap title="고정지출 추가" onSave={addFixed} btnColor="#6366f1" btnLabel="추가하기">
+        {lbl("항목명")}{inp(fForm.name,v=>setFForm(p=>({...p,name:v})),{placeholder:"예: 월세, 넷플릭스"})}<div style={{height:10}}/>
+        {lbl("금액 (원)")}{inp(fForm.amount,v=>setFForm(p=>({...p,amount:v})),{type:"number",placeholder:"500000"})}<div style={{height:10}}/>
+        {lbl("카테고리")}{sel(fForm.cat,v=>setFForm(p=>({...p,cat:v})),CATEGORIES)}
+      </ModalWrap>}
+
+      {modal==="editFixed"&&editTarget&&<ModalWrap title="고정지출 수정" onSave={saveFixed} btnColor="#0ea5e9" btnLabel="저장하기">
+        {lbl("항목명")}{inp(editTarget.name,v=>setEditTarget(p=>({...p,name:v})))}<div style={{height:10}}/>
+        {lbl("금액 (원)")}{inp(String(editTarget.amount),v=>setEditTarget(p=>({...p,amount:v})),{type:"number"})}<div style={{height:10}}/>
+        {lbl("카테고리")}{sel(editTarget.category,v=>setEditTarget(p=>({...p,category:v})),CATEGORIES)}
+      </ModalWrap>}
+
+      {modal==="exp"&&<ModalWrap title="변동지출 추가" onSave={addExp} btnColor="#D85A30" btnLabel="추가하기">
+        {lbl("날짜")}{inp(eForm.date,v=>setEForm(p=>({...p,date:v})),{type:"date"})}<div style={{height:10}}/>
+        {lbl("항목명")}{inp(eForm.name,v=>setEForm(p=>({...p,name:v})),{placeholder:"예: 커피, 택시"})}<div style={{height:10}}/>
+        {lbl("금액 (원)")}{inp(eForm.amount,v=>setEForm(p=>({...p,amount:v})),{type:"number",placeholder:"15000"})}<div style={{height:10}}/>
+        {lbl("카테고리")}{sel(eForm.cat,v=>setEForm(p=>({...p,cat:v})),CATEGORIES)}
+      </ModalWrap>}
+
+      {modal==="stock"&&<ModalWrap title="주식 수익 추가" onSave={addStock} btnColor="#185FA5" btnLabel="추가하기">
+        {lbl("날짜")}{inp(sForm.date,v=>setSForm(p=>({...p,date:v})),{type:"date"})}<div style={{height:10}}/>
+        {lbl("종목명")}{inp(sForm.name,v=>setSForm(p=>({...p,name:v})),{placeholder:"예: 삼성전자"})}<div style={{height:10}}/>
+        {lbl("상승률 (%)")}{inp(sForm.pct,v=>setSForm(p=>({...p,pct:v})),{type:"number",step:"0.01",placeholder:"3.5"})}<div style={{height:10}}/>
+        {lbl("수익금액 (원)")}{inp(sForm.amount,v=>setSForm(p=>({...p,amount:v})),{type:"number",placeholder:"85000"})}
+      </ModalWrap>}
+
+      {modal==="income"&&<ModalWrap title="기타 수입 추가" onSave={addIncome} btnColor="#1D9E75" btnLabel="추가하기">
+        {lbl("날짜")}{inp(iForm.date,v=>setIForm(p=>({...p,date:v})),{type:"date"})}<div style={{height:10}}/>
+        {lbl("항목명")}{inp(iForm.name,v=>setIForm(p=>({...p,name:v})),{placeholder:"예: 급여, 용돈"})}<div style={{height:10}}/>
+        {lbl("금액 (원)")}{inp(iForm.amount,v=>setIForm(p=>({...p,amount:v})),{type:"number",placeholder:"3000000"})}
+      </ModalWrap>}
+
+      {modal==="editTx"&&editTarget&&<ModalWrap title="내역 수정" onSave={saveTx} btnColor="#0ea5e9" btnLabel="저장하기">
+        {lbl("날짜")}{inp(editTarget.date,v=>setEditTarget(p=>({...p,date:v})),{type:"date"})}<div style={{height:10}}/>
+        {lbl("항목명")}{inp(editTarget.name,v=>setEditTarget(p=>({...p,name:v})))}<div style={{height:10}}/>
+        {lbl("금액 (원)")}{inp(String(editTarget.amount),v=>setEditTarget(p=>({...p,amount:v})),{type:"number"})}<div style={{height:10}}/>
+        {editTarget.sub==="stock"&&<>{lbl("상승률 (%)")}{inp(String(editTarget.pct||""),v=>setEditTarget(p=>({...p,pct:v})),{type:"number",step:"0.01"})}<div style={{height:10}}/></>}
+        {editTarget.sub!=="stock"&&<>{lbl("카테고리")}{sel(editTarget.cat,v=>setEditTarget(p=>({...p,cat:v})),CATEGORIES)}</>}
+      </ModalWrap>}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
 </body>
 </html>
