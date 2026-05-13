@@ -175,7 +175,7 @@ function App(){
 
   // 내역 도넛 차트 데이터
   const txChartData=useMemo(()=>{
-    const 지출=monthTx.filter(t=>t.type==="expense").reduce((s,t)=>s+t.amount,0);
+    const 지출=monthTx.filter(t=>t.type==="expense").reduce((s,t)=>s+t.amount,0)+fixedTotal;
     const 주식=monthTx.filter(t=>t.sub==="stock").reduce((s,t)=>s+t.amount,0);
     const 기타=monthTx.filter(t=>t.type==="income"&&t.sub!=="stock").reduce((s,t)=>s+t.amount,0);
     return[
@@ -183,7 +183,7 @@ function App(){
       ...(주식>0?[{name:"주식수익",val:주식,color:"#185FA5"}]:[]),
       ...(기타>0?[{name:"기타수입",val:기타,color:"#1D9E75"}]:[]),
     ];
-  },[monthTx]);
+  },[monthTx,fixedTotal]);
   const txChartTotal=useMemo(()=>totalIn-totalOut,[totalIn,totalOut]);
 
   if(loading)return(
