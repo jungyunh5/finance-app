@@ -20,6 +20,20 @@
 <div id="root"></div>
 <script type="text/babel">
 const{useState,useMemo,useEffect,useRef}=React;
+
+const DB_URL="https://finance-app-f8b1c-default-rtdb.firebaseio.com";
+
+// Firebase Realtime Database REST API
+const db={
+  get:async(path)=>{
+    const r=await fetch(`${DB_URL}/${path}.json`);
+    return r.json();
+  },
+  set:async(path,data)=>{
+    await fetch(`${DB_URL}/${path}.json`,{method:"PUT",body:JSON.stringify(data)});
+  }
+};
+
 const FIXED_DEFAULT=[{id:1,name:"월세",amount:500000,category:"주거"},{id:2,name:"통신비",amount:55000,category:"통신"},{id:3,name:"보험료",amount:120000,category:"보험"}];
 const CATEGORIES=["주거","통신","보험","식비","교통","구독","의료","업무","금융","나눔","기타"];
 const CAT_COLOR={주거:"#6366f1",통신:"#0ea5e9",보험:"#f59e0b",식비:"#10b981",교통:"#3b82f6",구독:"#a855f7",의료:"#ef4444",업무:"#f97316",금융:"#14b8a6",나눔:"#ec4899",기타:"#888"};
@@ -101,15 +115,44 @@ function Modal({title,onClose,onSave,btnColor,btnLabel,fields}){
 
 function App(){
   const[tab,setTab]=useState("내역");
-  const[fixedByMonth,setFixedByMonth]=useState(()=>{try{return JSON.parse(localStorage.getItem("finance-fixed-v2"))||{};}catch{return{};}});
-  const[txs,setTxs]=useState(()=>{try{return JSON.parse(localStorage.getItem("finance-txs"))||[];}catch{return[];}});
+  const[fixedByMonth,setFixedByMonth]=useState({});
+  const[txs,setTxs]=useState([]);
   const[modal,setModal]=useState(null);
   const[editTarget,setEditTarget]=useState(null);
   const[month,setMonth]=useState(thisMonth());
   const[showChart,setShowChart]=useState(false);
+  const[loading,setLoading]=useState(true);
+  const[syncing,setSyncing]=useState(false);
+  const saveTimer=useRef(null);
 
-  useEffect(()=>{try{localStorage.setItem("finance-fixed-v2",JSON.stringify(fixedByMonth));}catch{}},[fixedByMonth]);
-  useEffect(()=>{try{localStorage.setItem("finance-txs",JSON.stringify(txs));}catch{}},[txs]);
+  // 앱 시작 시 Firebase에서 불러오기
+  useEffect(()=>{
+    (async()=>{
+      try{
+        const[f,t]=await Promise.all([db.get("fixedByMonth"),db.get("txs")]);
+        setFixedByMonth(f||{});
+        setTxs(t?Object.values(t):[]);
+      }catch(e){console.error(e);}
+      setLoading(false);
+    })();
+  },[]);
+
+  // 변경 시 Firebase에 저장 (1초 debounce)
+  const saveToDb=(fbm,t)=>{
+    setSyncing(true);
+    clearTimeout(saveTimer.current);
+    saveTimer.current=setTimeout(async()=>{
+      try{
+        const txObj={};
+        t.forEach(tx=>{txObj[tx.id]=tx;});
+        await Promise.all([db.set("fixedByMonth",fbm),db.set("txs",txObj)]);
+      }catch(e){console.error(e);}
+      setSyncing(false);
+    },1000);
+  };
+
+  const updateFixed=(fbm)=>{setFixedByMonth(fbm);saveToDb(fbm,txs);};
+  const updateTxs=(t)=>{setTxs(t);saveToDb(fixedByMonth,t);};
 
   const getFixed=(m,fbm)=>{
     if(fbm[m])return fbm[m];
@@ -119,11 +162,10 @@ function App(){
   };
   const fixed=useMemo(()=>getFixed(month,fixedByMonth),[fixedByMonth,month]);
   const setFixed=updater=>{
-    setFixedByMonth(prev=>{
-      const cur=prev[month]?prev[month]:getFixed(month,prev);
-      const next=typeof updater==="function"?updater(cur):updater;
-      return{...prev,[month]:next};
-    });
+    const cur=fixedByMonth[month]?fixedByMonth[month]:getFixed(month,fixedByMonth);
+    const next=typeof updater==="function"?updater(cur):updater;
+    const newFbm={...fixedByMonth,[month]:next};
+    updateFixed(newFbm);
   };
 
   const isPast=month<thisMonth();
@@ -139,13 +181,20 @@ function App(){
   const sorted=[...monthTx].sort((a,b)=>b.date.localeCompare(a.date));
   const closeModal=()=>{setModal(null);setEditTarget(null);};
 
+  if(loading)return(
+    <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",height:"100vh",color:"#888",gap:12}}>
+      <div style={{fontSize:32}}>💰</div>
+      <p style={{fontSize:15}}>데이터 불러오는 중...</p>
+    </div>
+  );
+
   return(
     <div style={{maxWidth:480,margin:"0 auto",background:"#f5f5f7",minHeight:"100vh",paddingBottom:80}}>
       <div style={{padding:"24px 16px 0"}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16}}>
           <div>
             <p style={{fontSize:20,fontWeight:700,color:"#111",margin:0}}>재무 대시보드</p>
-            <p style={{fontSize:12,color:"#888",margin:"2px 0 0"}}>수입과 지출을 한눈에</p>
+            <p style={{fontSize:11,color:syncing?"#f59e0b":"#4ade80",margin:"2px 0 0"}}>{syncing?"⏳ 저장 중...":"✅ 모든 기기 동기화됨"}</p>
           </div>
           <select value={month} onChange={e=>setMonth(e.target.value)} style={{fontSize:13,padding:"6px 10px",borderRadius:8,border:"1.5px solid #ccc",background:"#fff",color:"#111"}}>
             {months.map(m=><option key={m} value={m}>{m}</option>)}
@@ -194,7 +243,7 @@ function App(){
                 <p style={{margin:0,fontSize:14,fontWeight:700,color:t.type==="income"?"#1D9E75":"#D85A30"}}>{t.type==="income"?"+":"-"}{fmt(t.amount)}원</p>
                 <div style={{display:"flex",gap:4}}>
                   <button onClick={()=>{setEditTarget(t);setModal("editTx");}} style={{background:"#E0F2FE",border:"1px solid #0ea5e9",borderRadius:6,cursor:"pointer",color:"#0ea5e9",padding:"3px 10px",fontSize:12,fontWeight:600}}>수정</button>
-                  <button onClick={()=>setTxs(p=>p.filter(x=>x.id!==t.id))} style={{background:"#FAECE7",border:"1px solid #D85A30",borderRadius:6,cursor:"pointer",color:"#D85A30",padding:"3px 10px",fontSize:12,fontWeight:600}}>삭제</button>
+                  <button onClick={()=>updateTxs(txs.filter(x=>x.id!==t.id))} style={{background:"#FAECE7",border:"1px solid #D85A30",borderRadius:6,cursor:"pointer",color:"#D85A30",padding:"3px 10px",fontSize:12,fontWeight:600}}>삭제</button>
                 </div>
               </div>
             </div>
@@ -256,22 +305,22 @@ function App(){
 
       {modal==="exp"&&<Modal title="변동지출 추가" onClose={closeModal} btnColor="#D85A30" btnLabel="추가하기"
         fields={[{key:"date",label:"날짜",type:"date",defaultVal:today()},{key:"name",label:"항목명",placeholder:"예: 커피, 택시"},{key:"amount",label:"금액 (원)",type:"number",placeholder:"15000"},{key:"cat",label:"카테고리",type:"select",options:CATEGORIES,defaultVal:"식비"}]}
-        onSave={v=>{if(!v.name||!v.amount)return;setTxs(p=>[...p,{id:Date.now(),type:"expense",sub:"var",date:v.date||today(),name:v.name,amount:+v.amount,cat:v.cat||"식비"}]);closeModal();}}
+        onSave={v=>{if(!v.name||!v.amount)return;updateTxs([...txs,{id:Date.now(),type:"expense",sub:"var",date:v.date||today(),name:v.name,amount:+v.amount,cat:v.cat||"식비"}]);closeModal();}}
       />}
 
       {modal==="stock"&&<Modal title="주식 수익 추가" onClose={closeModal} btnColor="#185FA5" btnLabel="추가하기"
         fields={[{key:"date",label:"날짜",type:"date",defaultVal:today()},{key:"name",label:"종목명",placeholder:"예: 삼성전자"},{key:"pct",label:"상승률 (%)",type:"number",step:"0.01",placeholder:"3.5"},{key:"amount",label:"수익금액 (원)",type:"number",placeholder:"85000"}]}
-        onSave={v=>{if(!v.name||!v.amount)return;setTxs(p=>[...p,{id:Date.now(),type:"income",sub:"stock",date:v.date||today(),name:v.name,amount:+v.amount,pct:+v.pct||0,cat:"주식"}]);closeModal();}}
+        onSave={v=>{if(!v.name||!v.amount)return;updateTxs([...txs,{id:Date.now(),type:"income",sub:"stock",date:v.date||today(),name:v.name,amount:+v.amount,pct:+v.pct||0,cat:"주식"}]);closeModal();}}
       />}
 
       {modal==="income"&&<Modal title="기타 수입 추가" onClose={closeModal} btnColor="#1D9E75" btnLabel="추가하기"
         fields={[{key:"date",label:"날짜",type:"date",defaultVal:today()},{key:"name",label:"항목명",placeholder:"예: 급여, 용돈",defaultVal:"급여"},{key:"amount",label:"금액 (원)",type:"number",placeholder:"3000000"}]}
-        onSave={v=>{if(!v.amount)return;setTxs(p=>[...p,{id:Date.now(),type:"income",sub:"salary",date:v.date||today(),name:v.name||"기타수입",amount:+v.amount,cat:"수입"}]);closeModal();}}
+        onSave={v=>{if(!v.amount)return;updateTxs([...txs,{id:Date.now(),type:"income",sub:"salary",date:v.date||today(),name:v.name||"기타수입",amount:+v.amount,cat:"수입"}]);closeModal();}}
       />}
 
       {modal==="editTx"&&editTarget&&<Modal key={editTarget.id+"et"} title="내역 수정" onClose={closeModal} btnColor="#0ea5e9" btnLabel="저장하기"
         fields={[{key:"date",label:"날짜",type:"date",defaultVal:editTarget.date},{key:"name",label:"항목명",defaultVal:editTarget.name},{key:"amount",label:"금액 (원)",type:"number",defaultVal:String(editTarget.amount)},...(editTarget.sub==="stock"?[{key:"pct",label:"상승률 (%)",type:"number",step:"0.01",defaultVal:String(editTarget.pct||"")}]:[]),...(editTarget.sub!=="stock"?[{key:"cat",label:"카테고리",type:"select",options:CATEGORIES,defaultVal:editTarget.cat}]:[])]}
-        onSave={v=>{if(!v.name||!v.amount)return;setTxs(p=>p.map(t=>t.id===editTarget.id?{...t,date:v.date,name:v.name,amount:+v.amount,cat:v.cat||t.cat,pct:+v.pct||0}:t));closeModal();}}
+        onSave={v=>{if(!v.name||!v.amount)return;updateTxs(txs.map(t=>t.id===editTarget.id?{...t,date:v.date,name:v.name,amount:+v.amount,cat:v.cat||t.cat,pct:+v.pct||0}:t));closeModal();}}
       />}
     </div>
   );
