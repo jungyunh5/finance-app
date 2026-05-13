@@ -28,10 +28,10 @@ const db={
 };
 
 const FIXED_DEFAULT=[];
-const CATEGORIES=["주거","통신","보험","식비","교통","구독","의료","업무","금융","나눔","기타"];
-const CAT_COLOR={주거:"#6366f1",통신:"#0ea5e9",보험:"#f59e0b",식비:"#10b981",교통:"#3b82f6",구독:"#a855f7",의료:"#ef4444",업무:"#f97316",금융:"#14b8a6",나눔:"#ec4899",기타:"#888"};
-const CAT_BG={주거:"#EEEDFE",통신:"#E0F2FE",보험:"#FEF3C7",식비:"#D1FAE5",교통:"#DBEAFE",구독:"#F3E8FF",의료:"#FEE2E2",업무:"#FFEDD5",금융:"#CCFBF1",나눔:"#FCE7F3",기타:"#F3F4F6"};
-const CAT_ICON={주거:"ti-home",통신:"ti-device-mobile",보험:"ti-shield",식비:"ti-tools-kitchen-2",교통:"ti-car",구독:"ti-refresh",의료:"ti-stethoscope",업무:"ti-briefcase",금융:"ti-coin",나눔:"ti-heart",기타:"ti-dots",주식:"ti-chart-line",수입:"ti-wallet"};
+const CATEGORIES=["주거","통신","보험","식비","교통","구독","의료","업무","금융","나눔","교육","기타"];
+const CAT_COLOR={주거:"#6366f1",통신:"#0ea5e9",보험:"#f59e0b",식비:"#16a34a",교통:"#3b82f6",구독:"#a855f7",의료:"#ef4444",업무:"#f97316",금융:"#0891b2",나눔:"#ec4899",교육:"#7c3aed",기타:"#888"};
+const CAT_BG={주거:"#EEEDFE",통신:"#E0F2FE",보험:"#FEF3C7",식비:"#DCFCE7",교통:"#DBEAFE",구독:"#F3E8FF",의료:"#FEE2E2",업무:"#FFEDD5",금융:"#CFFAFE",나눔:"#FCE7F3",교육:"#EDE9FE",기타:"#F3F4F6"};
+const CAT_ICON={주거:"ti-home",통신:"ti-device-mobile",보험:"ti-shield",식비:"ti-tools-kitchen-2",교통:"ti-car",구독:"ti-refresh",의료:"ti-stethoscope",업무:"ti-briefcase",금융:"ti-coin",나눔:"ti-heart",교육:"ti-school",기타:"ti-dots",주식:"ti-chart-line",수입:"ti-wallet"};
 const fmt=n=>n.toLocaleString("ko-KR");
 const today=()=>new Date().toISOString().slice(0,10);
 const thisMonth=()=>new Date().toISOString().slice(0,7);
@@ -59,7 +59,7 @@ function DonutChart({data,overrideTotal}){
       <svg viewBox={`0 0 ${size} ${size}`} width="100%" style={{maxWidth:200,display:"block",margin:"0 auto"}}>
         {slices.map((s,i)=><path key={i} d={s.path} fill={s.color} stroke="#fff" strokeWidth="2"/>)}
         <text x={cx} y={cy-8} textAnchor="middle" fontSize="11" fill="#6e6e73">잔액</text>
-        <text x={cx} y={cy+10} textAnchor="middle" fontSize="13" fontWeight="600" fill={displayTotal>=0?"#1D9E75":"#D85A30"}>{displayTotal>=0?"+":"-"}{fmt(Math.abs(displayTotal))}</text>
+        <text x={cx} y={cy+10} textAnchor="middle" fontSize="12" fontWeight="600" fill={displayTotal>=0?"#1D9E75":"#D85A30"}>{displayTotal>=0?"+":"-"}{fmt(Math.abs(displayTotal))}</text>
         <text x={cx} y={cy+24} textAnchor="middle" fontSize="11" fill="#6e6e73">원</text>
       </svg>
       <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:"6px 12px",marginTop:12}}>
@@ -71,6 +71,63 @@ function DonutChart({data,overrideTotal}){
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// 미니 달력 컴포넌트
+function MiniCalendar({month, fixedItems}){
+  const[y,m]=month.split("-").map(Number);
+  const firstDay=new Date(y,m-1,1).getDay();
+  const daysInMonth=new Date(y,m,0).getDate();
+  const days=[];
+  for(let i=0;i<firstDay;i++)days.push(null);
+  for(let i=1;i<=daysInMonth;i++)days.push(i);
+  const weeks=[];
+  for(let i=0;i<days.length;i+=7)weeks.push(days.slice(i,i+7));
+  const dayLabels=["일","월","화","수","목","금","토"];
+  const todayDate=new Date().getDate();
+  const todayMonth=new Date().toISOString().slice(0,7);
+  const isThisMonth=month===todayMonth;
+
+  // 고정지출 날짜 매핑 (날짜별로 항목 모음)
+  // 고정지출은 날짜 정보가 없으므로 1일에 표시
+  const fixedOnDay={1:fixedItems};
+
+  return(
+    <div style={{background:"rgba(255,255,255,0.15)",borderRadius:12,padding:"12px",marginTop:12}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2,marginBottom:4}}>
+        {dayLabels.map((d,i)=>(
+          <div key={d} style={{textAlign:"center",fontSize:10,color:i===0?"#fca5a5":i===6?"#93c5fd":"rgba(255,255,255,0.7)",fontWeight:600,padding:"2px 0"}}>{d}</div>
+        ))}
+      </div>
+      {weeks.map((week,wi)=>(
+        <div key={wi} style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2,marginBottom:2}}>
+          {Array.from({length:7}).map((_,di)=>{
+            const day=week[di];
+            const isToday=isThisMonth&&day===todayDate;
+            const hasFixed=day&&fixedOnDay[day]&&fixedOnDay[day].length>0;
+            return(
+              <div key={di} style={{textAlign:"center",padding:"3px 1px",borderRadius:6,background:isToday?"rgba(255,255,255,0.3)":"transparent",position:"relative"}}>
+                <span style={{fontSize:11,color:day?(di===0?"#fca5a5":di===6?"#93c5fd":"rgba(255,255,255,0.9)"):"transparent",fontWeight:isToday?700:400}}>{day||""}</span>
+                {hasFixed&&<div style={{width:4,height:4,borderRadius:"50%",background:"#fbbf24",margin:"1px auto 0"}}/>}
+              </div>
+            );
+          })}
+        </div>
+      ))}
+      {fixedItems.length>0&&(
+        <div style={{marginTop:8,borderTop:"1px solid rgba(255,255,255,0.2)",paddingTop:8}}>
+          <p style={{fontSize:10,color:"rgba(255,255,255,0.7)",marginBottom:4}}>📌 이번 달 고정지출</p>
+          <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+            {fixedItems.map(e=>(
+              <span key={e.id} style={{fontSize:10,background:"rgba(255,255,255,0.2)",borderRadius:4,padding:"2px 6px",color:"#fff"}}>
+                {e.name} {fmt(e.amount)}원
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -115,8 +172,10 @@ function App(){
   const[editTarget,setEditTarget]=useState(null);
   const[month,setMonth]=useState(thisMonth());
   const[showChart,setShowChart]=useState(false);
+  const[showCalendar,setShowCalendar]=useState(false);
   const[loading,setLoading]=useState(true);
   const[syncing,setSyncing]=useState(false);
+  const[sortMode,setSortMode]=useState("date"); // "date" | "category" | "type"
   const saveTimer=useRef(null);
 
   useEffect(()=>{
@@ -168,12 +227,9 @@ function App(){
   const totalIn=monthTx.filter(t=>t.type==="income").reduce((s,t)=>s+t.amount,0);
   const stockIn=monthTx.filter(t=>t.sub==="stock").reduce((s,t)=>s+t.amount,0);
   const balance=totalIn-totalOut;
-  const donutData=useMemo(()=>{const m={};fixed.forEach(e=>{m[e.category]=(m[e.category]||0)+e.amount;});return Object.entries(m).map(([name,val])=>({name,val,color:CAT_COLOR[name]||"#888"}));},[fixed]);
-  const months=getMonths();
-  const sorted=[...monthTx].sort((a,b)=>b.date.localeCompare(a.date));
-  const closeModal=()=>{setModal(null);setEditTarget(null);};
 
-  // 내역 도넛 차트 데이터
+  const donutData=useMemo(()=>{const m={};fixed.forEach(e=>{m[e.category]=(m[e.category]||0)+e.amount;});return Object.entries(m).map(([name,val])=>({name,val,color:CAT_COLOR[name]||"#888"}));},[fixed]);
+
   const txChartData=useMemo(()=>{
     const 지출=monthTx.filter(t=>t.type==="expense").reduce((s,t)=>s+t.amount,0)+fixedTotal;
     const 주식=monthTx.filter(t=>t.sub==="stock").reduce((s,t)=>s+t.amount,0);
@@ -184,7 +240,29 @@ function App(){
       ...(기타>0?[{name:"기타수입",val:기타,color:"#1D9E75"}]:[]),
     ];
   },[monthTx,fixedTotal]);
-  const txChartTotal=useMemo(()=>totalIn-totalOut,[totalIn,totalOut]);
+  const txChartTotal=balance;
+
+  // 정렬된 내역
+  const sorted=useMemo(()=>{
+    const arr=[...monthTx];
+    if(sortMode==="date")return arr.sort((a,b)=>b.date.localeCompare(a.date));
+    if(sortMode==="category")return arr.sort((a,b)=>(a.cat||"").localeCompare(b.cat||""));
+    if(sortMode==="type")return arr.sort((a,b)=>a.type.localeCompare(b.type));
+    return arr;
+  },[monthTx,sortMode]);
+
+  // 카테고리별 그룹핑 (고정지출)
+  const fixedGrouped=useMemo(()=>{
+    const groups={};
+    fixed.forEach(e=>{
+      if(!groups[e.category])groups[e.category]=[];
+      groups[e.category].push(e);
+    });
+    return Object.entries(groups).sort((a,b)=>a[0].localeCompare(b[0]));
+  },[fixed]);
+
+  const months=getMonths();
+  const closeModal=()=>{setModal(null);setEditTarget(null);};
 
   if(loading)return(
     <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",height:"100vh",color:"#888",gap:12}}>
@@ -206,9 +284,16 @@ function App(){
           </select>
         </div>
 
-        <div style={{background:"linear-gradient(135deg,#667eea,#764ba2)",borderRadius:16,padding:"24px",marginBottom:12,textAlign:"center"}}>
-          <p style={{fontSize:12,color:"rgba(255,255,255,0.8)",margin:"0 0 4px"}}>이번 달 잔액</p>
-          <p style={{fontSize:34,fontWeight:700,margin:0,color:"#fff"}}>{balance>=0?"+":""}{fmt(balance)}<span style={{fontSize:18}}>원</span></p>
+        {/* 잔액 카드 */}
+        <div style={{background:"linear-gradient(135deg,#667eea,#764ba2)",borderRadius:16,padding:"20px",marginBottom:12}}>
+          <div style={{textAlign:"center"}}>
+            <p style={{fontSize:12,color:"rgba(255,255,255,0.8)",margin:"0 0 4px"}}>이번 달 잔액</p>
+            <p style={{fontSize:34,fontWeight:700,margin:0,color:"#fff"}}>{balance>=0?"+":""}{fmt(balance)}<span style={{fontSize:18}}>원</span></p>
+          </div>
+          <button onClick={()=>setShowCalendar(v=>!v)} style={{display:"block",margin:"12px auto 0",background:"rgba(255,255,255,0.2)",border:"1px solid rgba(255,255,255,0.4)",borderRadius:8,padding:"5px 14px",color:"#fff",fontSize:12,cursor:"pointer"}}>
+            {showCalendar?"달력 닫기 ▲":"달력 보기 ▼"}
+          </button>
+          {showCalendar&&<MiniCalendar month={month} fixedItems={fixed}/>}
         </div>
 
         <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:8,marginBottom:12}}>
@@ -236,68 +321,107 @@ function App(){
               <DonutChart data={txChartData} overrideTotal={txChartTotal}/>
             </div>
           )}
-          <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
+
+          {/* 액션 버튼 */}
+          <div style={{display:"flex",gap:6,marginBottom:10,flexWrap:"wrap"}}>
             {[{label:"지출 추가",color:"#D85A30",bg:"#FAECE7",m:"exp"},{label:"주식수익",color:"#185FA5",bg:"#E6F1FB",m:"stock"},{label:"기타수입",color:"#1D9E75",bg:"#E1F5EE",m:"income"}].map(b=>(
               <button key={b.label} onClick={()=>setModal(b.m)} style={{padding:"8px 16px",borderRadius:20,border:`1.5px solid ${b.color}`,background:b.bg,color:b.color,fontSize:13,fontWeight:600,cursor:"pointer"}}>{b.label}</button>
             ))}
           </div>
+
+          {/* 정렬 버튼 */}
+          <div style={{display:"flex",gap:4,marginBottom:12}}>
+            {[{key:"date",label:"날짜순"},{key:"category",label:"카테고리순"},{key:"type",label:"유형순"}].map(s=>(
+              <button key={s.key} onClick={()=>setSortMode(s.key)} style={{padding:"5px 10px",borderRadius:16,border:"1px solid #ddd",background:sortMode===s.key?"#6366f1":"#fff",color:sortMode===s.key?"#fff":"#888",fontSize:11,fontWeight:600,cursor:"pointer"}}>{s.label}</button>
+            ))}
+          </div>
+
           {sorted.length===0&&<p style={{textAlign:"center",color:"#aaa",padding:"40px 0",fontSize:14}}>이번 달 내역이 없습니다</p>}
-          {sorted.map(t=>(
-            <div key={t.id} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:"#fff",borderRadius:12,marginBottom:8,border:"1px solid #eee"}}>
-              <div style={{width:40,height:40,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,background:t.type==="income"?"#E1F5EE":"#FAECE7"}}>
-                <i className={`ti ${CAT_ICON[t.cat]||"ti-circle"}`} style={{fontSize:18,color:t.type==="income"?"#1D9E75":"#D85A30"}}/>
-              </div>
-              <div style={{flex:1,minWidth:0}}>
-                <p style={{margin:0,fontSize:14,fontWeight:600,color:"#111",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{t.name}</p>
-                <p style={{margin:"2px 0 0",fontSize:11,color:"#888"}}>{t.date} · {t.cat}{t.sub==="stock"&&t.pct?` · +${t.pct}%`:""}</p>
-              </div>
-              <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
-                <p style={{margin:0,fontSize:14,fontWeight:700,color:t.type==="income"?"#1D9E75":"#D85A30"}}>{t.type==="income"?"+":"-"}{fmt(t.amount)}원</p>
-                <div style={{display:"flex",gap:4}}>
-                  <button onClick={()=>{setEditTarget(t);setModal("editTx");}} style={{background:"#E0F2FE",border:"1px solid #0ea5e9",borderRadius:6,cursor:"pointer",color:"#0ea5e9",padding:"3px 10px",fontSize:12,fontWeight:600}}>수정</button>
-                  <button onClick={()=>updateTxs(txs.filter(x=>x.id!==t.id))} style={{background:"#FAECE7",border:"1px solid #D85A30",borderRadius:6,cursor:"pointer",color:"#D85A30",padding:"3px 10px",fontSize:12,fontWeight:600}}>삭제</button>
+
+          {/* 카테고리순일 때 그룹 헤더 */}
+          {sortMode==="category"?(()=>{
+            const groups={};
+            sorted.forEach(t=>{const k=t.cat||"기타";if(!groups[k])groups[k]=[];groups[k].push(t);});
+            return Object.entries(groups).map(([cat,items])=>(
+              <div key={cat} style={{marginBottom:12}}>
+                <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6}}>
+                  <div style={{width:8,height:8,borderRadius:"50%",background:CAT_COLOR[cat]||"#888"}}/>
+                  <span style={{fontSize:12,fontWeight:700,color:CAT_COLOR[cat]||"#888"}}>{cat}</span>
+                  <span style={{fontSize:11,color:"#aaa",marginLeft:"auto"}}>{fmt(items.reduce((s,t)=>s+t.amount,0))}원</span>
                 </div>
+                {items.map(t=>TxCard(t,updateTxs,txs,setEditTarget,setModal))}
               </div>
-            </div>
-          ))}
+            ));
+          })():sortMode==="type"?(()=>{
+            const groups={income:[],expense:[]};
+            sorted.forEach(t=>groups[t.type]?groups[t.type].push(t):null);
+            return[
+              groups.income.length>0&&<div key="income" style={{marginBottom:12}}>
+                <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6}}>
+                  <span style={{fontSize:12,fontWeight:700,color:"#1D9E75"}}>💚 수입</span>
+                  <span style={{fontSize:11,color:"#aaa",marginLeft:"auto"}}>{fmt(groups.income.reduce((s,t)=>s+t.amount,0))}원</span>
+                </div>
+                {groups.income.map(t=>TxCard(t,updateTxs,txs,setEditTarget,setModal))}
+              </div>,
+              groups.expense.length>0&&<div key="expense" style={{marginBottom:12}}>
+                <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6}}>
+                  <span style={{fontSize:12,fontWeight:700,color:"#D85A30"}}>🔴 지출</span>
+                  <span style={{fontSize:11,color:"#aaa",marginLeft:"auto"}}>{fmt(groups.expense.reduce((s,t)=>s+t.amount,0))}원</span>
+                </div>
+                {groups.expense.map(t=>TxCard(t,updateTxs,txs,setEditTarget,setModal))}
+              </div>
+            ];
+          })():sorted.map(t=>TxCard(t,updateTxs,txs,setEditTarget,setModal))}
         </>}
 
         {tab==="고정지출"&&<>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
             <p style={{fontSize:12,color:"#888",margin:0}}>
               매달 자동 반영
-              {isPast&&<span style={{marginLeft:6,fontSize:11,color:"#f59e0b",fontWeight:600}}>📌 과거 월 — 읽기 전용</span>}
+              {isPast&&<span style={{marginLeft:6,fontSize:11,color:"#f59e0b",fontWeight:600}}>📌 과거 월</span>}
             </p>
             <div style={{display:"flex",gap:6}}>
               <button onClick={()=>setShowChart(v=>!v)} style={{padding:"7px 14px",borderRadius:20,border:"1.5px solid #6366f1",background:showChart?"#6366f1":"#EEEDFE",color:showChart?"#fff":"#6366f1",fontSize:12,fontWeight:600,cursor:"pointer"}}>{showChart?"목록":"차트"}</button>
               {!isPast&&<button onClick={()=>setModal("fixed")} style={{padding:"7px 14px",borderRadius:20,border:"1.5px solid #6366f1",background:"#EEEDFE",color:"#6366f1",fontSize:12,fontWeight:600,cursor:"pointer"}}>+ 추가</button>}
             </div>
           </div>
+
           {showChart?(
             <div style={{background:"#fff",borderRadius:16,padding:20,border:"1px solid #eee",marginBottom:12}}>
               <p style={{fontSize:13,fontWeight:600,color:"#111",margin:"0 0 16px"}}>카테고리별 고정지출</p>
               <DonutChart data={donutData}/>
             </div>
           ):(
-            fixed.map(e=>(
-              <div key={e.id} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:"#fff",borderRadius:12,marginBottom:8,border:"1px solid #eee"}}>
-                <div style={{width:40,height:40,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,background:CAT_BG[e.category]||"#F3F4F6"}}>
-                  <i className={`ti ${CAT_ICON[e.category]||"ti-circle"}`} style={{fontSize:18,color:CAT_COLOR[e.category]||"#888"}}/>
+            fixedGrouped.length===0?<p style={{textAlign:"center",color:"#aaa",padding:"40px 0",fontSize:14}}>고정지출이 없습니다</p>:
+            fixedGrouped.map(([cat,items])=>(
+              <div key={cat} style={{marginBottom:12}}>
+                {/* 카테고리 헤더 */}
+                <div style={{display:"flex",alignItems:"center",gap:6,padding:"6px 4px",marginBottom:4}}>
+                  <div style={{width:10,height:10,borderRadius:3,background:CAT_COLOR[cat]||"#888"}}/>
+                  <span style={{fontSize:12,fontWeight:700,color:CAT_COLOR[cat]||"#888"}}>{cat}</span>
+                  <span style={{fontSize:11,color:"#aaa",marginLeft:"auto"}}>{fmt(items.reduce((s,e)=>s+e.amount,0))}원</span>
                 </div>
-                <div style={{flex:1,minWidth:0}}>
-                  <p style={{margin:0,fontSize:14,fontWeight:600,color:"#111"}}>{e.name}</p>
-                  <p style={{margin:"2px 0 0",fontSize:11,color:CAT_COLOR[e.category]||"#888",fontWeight:600}}>{e.category}</p>
-                </div>
-                <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
-                  <p style={{margin:0,fontSize:14,fontWeight:700,color:"#111"}}>{fmt(e.amount)}원</p>
-                  <div style={{display:"flex",gap:4}}>
-                    <button onClick={()=>{setEditTarget(e);setModal("editFixed");}} style={{background:"#E0F2FE",border:"1px solid #0ea5e9",borderRadius:6,cursor:"pointer",color:"#0ea5e9",padding:"3px 10px",fontSize:12,fontWeight:600}}>수정</button>
-                    {!isPast&&<button onClick={()=>setFixed(p=>p.filter(x=>x.id!==e.id))} style={{background:"#FAECE7",border:"1px solid #D85A30",borderRadius:6,cursor:"pointer",color:"#D85A30",padding:"3px 10px",fontSize:12,fontWeight:600}}>삭제</button>}
+                {items.map(e=>(
+                  <div key={e.id} style={{display:"flex",alignItems:"center",gap:10,padding:"11px 14px",background:"#fff",borderRadius:12,marginBottom:6,border:"1px solid #eee"}}>
+                    <div style={{width:36,height:36,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,background:CAT_BG[e.category]||"#F3F4F6"}}>
+                      <i className={`ti ${CAT_ICON[e.category]||"ti-circle"}`} style={{fontSize:16,color:CAT_COLOR[e.category]||"#888"}}/>
+                    </div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <p style={{margin:0,fontSize:14,fontWeight:600,color:"#111"}}>{e.name}</p>
+                    </div>
+                    <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
+                      <p style={{margin:0,fontSize:14,fontWeight:700,color:"#111"}}>{fmt(e.amount)}원</p>
+                      <div style={{display:"flex",gap:4}}>
+                        <button onClick={()=>{setEditTarget(e);setModal("editFixed");}} style={{background:"#E0F2FE",border:"1px solid #0ea5e9",borderRadius:6,cursor:"pointer",color:"#0ea5e9",padding:"3px 10px",fontSize:11,fontWeight:600}}>수정</button>
+                        {!isPast&&<button onClick={()=>setFixed(p=>p.filter(x=>x.id!==e.id))} style={{background:"#FAECE7",border:"1px solid #D85A30",borderRadius:6,cursor:"pointer",color:"#D85A30",padding:"3px 10px",fontSize:11,fontWeight:600}}>삭제</button>}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
             ))
           )}
+
           <div style={{padding:"14px 16px",background:"#fff",borderRadius:12,border:"1px solid #eee",display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
             <p style={{margin:0,fontSize:13,color:"#888"}}>고정지출 합계</p>
             <p style={{margin:0,fontSize:17,fontWeight:700,color:"#D85A30"}}>{fmt(fixedTotal)}원</p>
@@ -337,6 +461,28 @@ function App(){
     </div>
   );
 }
+
+function TxCard(t,updateTxs,txs,setEditTarget,setModal){
+  return(
+    <div key={t.id} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:"#fff",borderRadius:12,marginBottom:6,border:"1px solid #eee"}}>
+      <div style={{width:40,height:40,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,background:t.type==="income"?"#E1F5EE":"#FAECE7"}}>
+        <i className={`ti ${CAT_ICON[t.cat]||"ti-circle"}`} style={{fontSize:18,color:t.type==="income"?"#1D9E75":"#D85A30"}}/>
+      </div>
+      <div style={{flex:1,minWidth:0}}>
+        <p style={{margin:0,fontSize:14,fontWeight:600,color:"#111",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{t.name}</p>
+        <p style={{margin:"2px 0 0",fontSize:11,color:"#888"}}>{t.date} · {t.cat}{t.sub==="stock"&&t.pct?` · +${t.pct}%`:""}</p>
+      </div>
+      <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
+        <p style={{margin:0,fontSize:14,fontWeight:700,color:t.type==="income"?"#1D9E75":"#D85A30"}}>{t.type==="income"?"+":"-"}{fmt(t.amount)}원</p>
+        <div style={{display:"flex",gap:4}}>
+          <button onClick={()=>{setEditTarget(t);setModal("editTx");}} style={{background:"#E0F2FE",border:"1px solid #0ea5e9",borderRadius:6,cursor:"pointer",color:"#0ea5e9",padding:"3px 10px",fontSize:12,fontWeight:600}}>수정</button>
+          <button onClick={()=>updateTxs(txs.filter(x=>x.id!==t.id))} style={{background:"#FAECE7",border:"1px solid #D85A30",borderRadius:6,cursor:"pointer",color:"#D85A30",padding:"3px 10px",fontSize:12,fontWeight:600}}>삭제</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
 </script>
 </body>
