@@ -38,9 +38,10 @@ const thisMonth=()=>new Date().toISOString().slice(0,7);
 const getMonths=()=>{const arr=[];for(let i=-12;i<=12;i++){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+i);arr.push(d.toISOString().slice(0,7));}return arr;};
 const iStyle={display:"block",width:"100%",padding:"11px 12px",borderRadius:8,border:"1.5px solid #aaa",background:"#fafafa",color:"#111",fontSize:16,boxSizing:"border-box",outline:"none",marginBottom:12,fontFamily:"inherit"};
 
-function DonutChart({data}){
+function DonutChart({data,overrideTotal}){
   const size=200,cx=100,cy=100,r=72,inner=46;
   const total=data.reduce((s,d)=>s+d.val,0);
+  const displayTotal=overrideTotal!==undefined?overrideTotal:total;
   if(!total)return <p style={{textAlign:"center",color:"#6e6e73",fontSize:13,padding:"20px 0"}}>데이터 없음</p>;
   let angle=-Math.PI/2;
   const slices=data.map(d=>{
@@ -57,8 +58,8 @@ function DonutChart({data}){
     <div>
       <svg viewBox={`0 0 ${size} ${size}`} width="100%" style={{maxWidth:200,display:"block",margin:"0 auto"}}>
         {slices.map((s,i)=><path key={i} d={s.path} fill={s.color} stroke="#fff" strokeWidth="2"/>)}
-        <text x={cx} y={cy-8} textAnchor="middle" fontSize="11" fill="#6e6e73">합계</text>
-        <text x={cx} y={cy+10} textAnchor="middle" fontSize="13" fontWeight="600" fill="#111">{fmt(total)}</text>
+        <text x={cx} y={cy-8} textAnchor="middle" fontSize="11" fill="#6e6e73">잔액</text>
+        <text x={cx} y={cy+10} textAnchor="middle" fontSize="13" fontWeight="600" fill={displayTotal>=0?"#1D9E75":"#D85A30"}>{displayTotal>=0?"+":"-"}{fmt(Math.abs(displayTotal))}</text>
         <text x={cx} y={cy+24} textAnchor="middle" fontSize="11" fill="#6e6e73">원</text>
       </svg>
       <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:"6px 12px",marginTop:12}}>
@@ -183,6 +184,7 @@ function App(){
       ...(기타>0?[{name:"기타수입",val:기타,color:"#1D9E75"}]:[]),
     ];
   },[monthTx]);
+  const txChartTotal=useMemo(()=>totalIn-totalOut,[totalIn,totalOut]);
 
   if(loading)return(
     <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",height:"100vh",color:"#888",gap:12}}>
@@ -231,7 +233,7 @@ function App(){
           {txChartData.length>0&&(
             <div style={{background:"#fff",borderRadius:16,padding:"16px",marginBottom:14,border:"1px solid #eee"}}>
               <p style={{fontSize:13,fontWeight:600,color:"#111",margin:"0 0 12px"}}>이번 달 내역 요약</p>
-              <DonutChart data={txChartData}/>
+              <DonutChart data={txChartData} overrideTotal={txChartTotal}/>
             </div>
           )}
           <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
